@@ -21,6 +21,7 @@ import com.example.travelappbe.entity.User;
 import com.example.travelappbe.entity.UserRole;
 import com.example.travelappbe.exception.UserAlreadyExistsException;
 import com.example.travelappbe.repository.UserRepository;
+import com.example.travelappbe.security.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -30,6 +31,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private UserService userService;
