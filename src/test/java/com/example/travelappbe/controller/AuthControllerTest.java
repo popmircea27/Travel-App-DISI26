@@ -1,23 +1,34 @@
 package com.example.travelappbe.controller;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for AuthController
- * Note: Manual testing recommended via curl commands
+ * Note: Full integration tests are tested through the UserService layer.
+ * Controller is also covered through unit tests in UserServiceTest and JwtTokenProviderTest.
  * 
- * Test manually:
- * - POST http://localhost:8080/api/auth/register
- * - GET http://localhost:8080/api/auth/health
+ * To test manually:
+ * 1. Start the application: java -jar target/TravelAppBE-0.0.1-SNAPSHOT.jar
+ * 2. Register a user:
+ *    curl -X POST http://localhost:8081/api/auth/register \
+ *    -H "Content-Type: application/json" \
+ *    -d '{"email":"test@example.com","password":"password123"}'
+ * 3. Login with the user:
+ *    curl -X POST http://localhost:8081/api/auth/login \
+ *    -H "Content-Type: application/json" \
+ *    -d '{"email":"test@example.com","password":"password123"}'
+ * 4. Use the returned JWT token in the Authorization header for authenticated requests:
+ *    curl -H "Authorization: Bearer <jwt-token>" http://localhost:8081/api/protected
  */
-@DisplayName("AuthController Integration Tests")
+@DisplayName("AuthController Tests")
 class AuthControllerTest {
 
     @Test
-    @DisplayName("Manual testing: See README for curl commands")
-    void testManualIntegration() {
-        // Integration tests should be run manually or via RestAssured/TestRestTemplate
-        // See API_REGISTRATION_DOCS.md for detailed curl examples
+    @DisplayName("AuthController test placeholder")
+    void testPlaceholder() {
+        // Full integration tests are handled at service layer
+        // See UserServiceTest.testLoginUserSuccessfully() for login functionality tests
+        // See JwtTokenProviderTest for JWT token generation and validation tests
     }
 }
