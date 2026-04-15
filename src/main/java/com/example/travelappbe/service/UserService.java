@@ -1,24 +1,31 @@
 package com.example.travelappbe.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.travelappbe.dto.LoginRequestDto;
+import com.example.travelappbe.dto.LoginResponseDto;
 import com.example.travelappbe.dto.RegisterRequestDto;
 import com.example.travelappbe.dto.RegisterResponseDto;
 import com.example.travelappbe.entity.User;
 import com.example.travelappbe.entity.UserRole;
+import com.example.travelappbe.exception.InvalidCredentialsException;
 import com.example.travelappbe.exception.UserAlreadyExistsException;
 import com.example.travelappbe.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.example.travelappbe.security.JwtTokenProvider;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     /**
@@ -77,5 +84,30 @@ public class UserService {
      */
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    /**
+     * Authenticates a user with email and password, returning a JWT token.
+     *
+     * @param loginRequestDto the login request containing email and password
+     * @return LoginResponseDto with JWT token (containing email and role)
+     * @throws InvalidCredentialsException if user not found or password is incorrect
+     */
+    @Transactional
+    public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) {
+        // Find user by email
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+
+        // Verify password
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        // Generate JWT token with email and role
+        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().toString());
+
+        // Return login response with only the token
+        return new LoginResponseDto(token);
     }
 }

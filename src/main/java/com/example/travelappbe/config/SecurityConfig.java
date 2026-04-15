@@ -1,5 +1,7 @@
 package com.example.travelappbe.config;
 
+import com.example.travelappbe.security.JwtAuthenticationFilter;
+import com.example.travelappbe.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -27,22 +30,24 @@ public class SecurityConfig {
     }
 
     /**
-     * Configure HTTP security to allow registration endpoint without authentication
+     * Configure HTTP security to allow registration and login endpoints without authentication
      *
      * @param http the HttpSecurity object
+     * @param jwtTokenProvider the JWT token provider
      * @return configured SecurityFilterChain
      * @throws Exception if configuration fails
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
         http
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/api/auth/register", "/api/auth/health").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/health").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement((session) -> session.sessionCreationPolicy(STATELESS));
+                .sessionManagement((session) -> session.sessionCreationPolicy(STATELESS))
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

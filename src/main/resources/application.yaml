@@ -16,5 +16,9 @@ spring:
       hibernate:
         format_sql: true
 
+jwt:
+  secret: your-secret-key-must-be-at-least-256-bits-long-for-HS256-algorithm-requirement-please-change-in-production
+  expiration: 86400000
+
 server:
   port: 8081
