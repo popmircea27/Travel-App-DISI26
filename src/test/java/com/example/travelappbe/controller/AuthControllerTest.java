@@ -1,34 +1,127 @@
 package com.example.travelappbe.controller;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import com.example.travelappbe.dto.LoginRequestDto;
+import com.example.travelappbe.dto.LoginResponseDto;
+import com.example.travelappbe.dto.RegisterRequestDto;
+import com.example.travelappbe.dto.RegisterResponseDto;
+import com.example.travelappbe.exception.InvalidCredentialsException;
+import com.example.travelappbe.exception.UserAlreadyExistsException;
+import com.example.travelappbe.service.UserService;
 
 /**
- * Integration tests for AuthController
- * Note: Full integration tests are tested through the UserService layer.
- * Controller is also covered through unit tests in UserServiceTest and JwtTokenProviderTest.
- * 
- * To test manually:
- * 1. Start the application: java -jar target/TravelAppBE-0.0.1-SNAPSHOT.jar
- * 2. Register a user:
- *    curl -X POST http://localhost:8081/api/auth/register \
- *    -H "Content-Type: application/json" \
- *    -d '{"email":"test@example.com","password":"password123"}'
- * 3. Login with the user:
- *    curl -X POST http://localhost:8081/api/auth/login \
- *    -H "Content-Type: application/json" \
- *    -d '{"email":"test@example.com","password":"password123"}'
- * 4. Use the returned JWT token in the Authorization header for authenticated requests:
- *    curl -H "Authorization: Bearer <jwt-token>" http://localhost:8081/api/protected
+ * Unit tests for AuthController
+ * Tests registration, login, and health check endpoints
  */
+@ExtendWith(MockitoExtension.class)
 @DisplayName("AuthController Tests")
 class AuthControllerTest {
 
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
+    private AuthController authController;
+
+    private RegisterRequestDto registerRequest;
+    private LoginRequestDto loginRequest;
+    private RegisterResponseDto registerResponse;
+    private LoginResponseDto loginResponse;
+
+    @BeforeEach
+    void setUp() {
+        registerRequest = new RegisterRequestDto("test@example.com", "password123");
+        loginRequest = new LoginRequestDto("test@example.com", "password123");
+        
+        UUID testId = UUID.randomUUID();
+        registerResponse = new RegisterResponseDto(testId, "test@example.com", "TOURIST", LocalDateTime.now());
+        loginResponse = new LoginResponseDto("jwt_token_12345");
+    }
+
     @Test
-    @DisplayName("AuthController test placeholder")
-    void testPlaceholder() {
-        // Full integration tests are handled at service layer
-        // See UserServiceTest.testLoginUserSuccessfully() for login functionality tests
-        // See JwtTokenProviderTest for JWT token generation and validation tests
+    @DisplayName("Should successfully register a new user")
+    void testRegister_Success() {
+        // Arrange
+        when(userService.registerUser(any(RegisterRequestDto.class))).thenReturn(registerResponse);
+
+        // Act
+        ResponseEntity<RegisterResponseDto> result = authController.register(registerRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals("test@example.com", result.getBody().getEmail());
+    }
+
+    @Test
+    @DisplayName("Should return error when registering with duplicate email")
+    void testRegister_DuplicateEmail() {
+        // Arrange
+        when(userService.registerUser(any(RegisterRequestDto.class)))
+                .thenThrow(new UserAlreadyExistsException("User already exists"));
+
+        // Act & Assert
+        try {
+            authController.register(registerRequest);
+        } catch (UserAlreadyExistsException e) {
+            assertEquals("User already exists", e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Should successfully login with correct credentials")
+    void testLogin_Success() {
+        // Arrange
+        when(userService.loginUser(any(LoginRequestDto.class))).thenReturn(loginResponse);
+
+        // Act
+        ResponseEntity<LoginResponseDto> result = authController.login(loginRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("jwt_token_12345", result.getBody().getToken());
+    }
+
+    @Test
+    @DisplayName("Should return error when login with wrong credentials")
+    void testLogin_InvalidCredentials() {
+        // Arrange
+        when(userService.loginUser(any(LoginRequestDto.class)))
+                .thenThrow(new InvalidCredentialsException("Invalid credentials"));
+
+        // Act & Assert
+        try {
+            authController.login(loginRequest);
+        } catch (InvalidCredentialsException e) {
+            assertEquals("Invalid credentials", e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Should return 200 OK on health check")
+    void testHealth_Success() {
+        // Act
+        ResponseEntity<String> result = authController.health();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 }
