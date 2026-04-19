@@ -99,4 +99,18 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    /**
+     * Validate a JWT token and extract the email if valid.
+     *
+     * @param token the JWT token to validate
+     * @return email if token is valid
+     * @throws Exception if token is invalid or expired
+     */
+    public String validateAndGetEmail(String token) {
+        if (validateToken(token)) {
+            return getEmailFromToken(token);
+        }
+        throw new IllegalArgumentException("Invalid or expired token");
+    }
 }
