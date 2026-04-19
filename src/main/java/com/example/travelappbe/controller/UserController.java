@@ -1,6 +1,7 @@
 package com.example.travelappbe.controller;
 
 import com.example.travelappbe.dto.UserProfileDto;
+import com.example.travelappbe.exception.ErrorResponse;
 import com.example.travelappbe.service.UserService;
 import com.example.travelappbe.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,10 +36,11 @@ public class UserController {
      * @return ResponseEntity with the authenticated user's profile
      */
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> getProfile(HttpServletRequest request) {
+    public ResponseEntity<?> getProfile(HttpServletRequest request) {
         String email = extractEmailFromToken(request);
         if (email == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Invalid or missing authentication token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
         UserProfileDto profile = userService.getProfileByEmail(email);
         return ResponseEntity.ok(profile);
@@ -52,10 +54,11 @@ public class UserController {
      * @return ResponseEntity with the updated user profile
      */
     @PutMapping("/me")
-    public ResponseEntity<UserProfileDto> updateProfile(HttpServletRequest request, @RequestBody UserProfileDto profileData) {
+    public ResponseEntity<?> updateProfile(HttpServletRequest request, @RequestBody UserProfileDto profileData) {
         String email = extractEmailFromToken(request);
         if (email == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Invalid or missing authentication token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
         UserProfileDto existingProfile = userService.getProfileByEmail(email);
         UserProfileDto updatedProfile = userService.updateUserProfile(existingProfile.getId(), profileData);
@@ -82,12 +85,13 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserProfileDto> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<?> getUserById(@PathVariable UUID id) {
         try {
             UserProfileDto user = userService.getUserProfile(id);
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "User not found with id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
