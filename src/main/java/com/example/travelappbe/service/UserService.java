@@ -61,6 +61,10 @@ public class UserService {
 
         // Save user to database
         User savedUser = userRepository.save(user);
+        
+        // Ensure the entity is fully persisted and auto-generated fields are available
+        // by flushing the persistence context to the database
+        userRepository.flush();
 
         // Return response DTO
         return new RegisterResponseDto(
