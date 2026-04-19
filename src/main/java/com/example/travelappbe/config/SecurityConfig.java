@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.example.travelappbe.security.JwtAuthenticationFilter;
 import com.example.travelappbe.security.JwtTokenProvider;
@@ -37,12 +38,14 @@ public class SecurityConfig {
      *
      * @param http the HttpSecurity object
      * @param jwtTokenProvider the JWT token provider
+     * @param corsConfigurationSource the CORS configuration source
      * @return configured SecurityFilterChain
      * @throws Exception if configuration fails
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
+                .cors((cors) -> cors.configurationSource(corsConfigurationSource))
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/health").permitAll()
