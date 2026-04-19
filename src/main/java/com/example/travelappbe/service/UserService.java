@@ -1,5 +1,9 @@
 package com.example.travelappbe.service;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +12,7 @@ import com.example.travelappbe.dto.LoginRequestDto;
 import com.example.travelappbe.dto.LoginResponseDto;
 import com.example.travelappbe.dto.RegisterRequestDto;
 import com.example.travelappbe.dto.RegisterResponseDto;
+import com.example.travelappbe.dto.UserProfileDto;
 import com.example.travelappbe.entity.User;
 import com.example.travelappbe.entity.UserRole;
 import com.example.travelappbe.exception.InvalidCredentialsException;
@@ -109,5 +114,80 @@ public class UserService {
 
         // Return login response with only the token
         return new LoginResponseDto(token);
+    }
+
+    /**
+     * Retrieves the profile of a user by their ID.
+     *
+     * @param userId the user ID
+     * @return UserProfileDto with user details
+     * @throws IllegalArgumentException if user not found
+     */
+    public UserProfileDto getUserProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        return convertToProfileDto(user);
+    }
+
+    /**
+     * Retrieves the profile of the authenticated user by email.
+     *
+     * @param email the user email
+     * @return UserProfileDto with user details
+     * @throws InvalidCredentialsException if user not found
+     */
+    public UserProfileDto getProfileByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found with this email"));
+        return convertToProfileDto(user);
+    }
+
+    /**
+     * Retrieves all users (ADMIN ONLY).
+     *
+     * @return List of UserProfileDto
+     */
+    public List<UserProfileDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToProfileDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Updates the profile of a user by their ID (ADMIN ONLY or self).
+     *
+     * @param userId the user ID
+     * @param profileData the updated profile data
+     * @return UserProfileDto with updated user details
+     * @throws IllegalArgumentException if user not found
+     */
+    @Transactional
+    public UserProfileDto updateUserProfile(UUID userId, UserProfileDto profileData) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        // Only allow updating email if it's provided and different
+        if (profileData.getEmail() != null && !profileData.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(profileData.getEmail())) {
+                throw new UserAlreadyExistsException("Email is already in use");
+            }
+            user.setEmail(profileData.getEmail());
+        }
+
+        User updatedUser = userRepository.save(user);
+        return convertToProfileDto(updatedUser);
+    }
+
+    /**
+     * Convert User entity to UserProfileDto.
+     */
+    private UserProfileDto convertToProfileDto(User user) {
+        return new UserProfileDto(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().toString(),
+                user.getCreatedAt()
+        );
     }
 }
