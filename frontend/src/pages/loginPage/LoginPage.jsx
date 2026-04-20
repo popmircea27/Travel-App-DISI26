@@ -1,8 +1,9 @@
+// src/pages/loginPage/LoginPage.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./LoginPage.css";
 import { login } from "../../services/api.js";
-import { MOCK_USERS } from "../../services/mockData.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 function LoginPage() {
     const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ function LoginPage() {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { handleLoginSuccess } = useAuth();
 
     const validate = () => {
         const newErrors = {};
@@ -27,19 +29,14 @@ function LoginPage() {
         }
 
         setLoading(true);
+        setErrors({});
         try {
-            // Când backend-ul e gata, decomentează asta și șterge mock-ul:
-            // const data = await login(email, password);
-            // localStorage.setItem("token", data.token);
-
-            // --- MOCK temporar ---
-            const mockUser = MOCK_USERS.tourist;
-            localStorage.setItem("user", JSON.stringify(mockUser));
-            // ---------------------
-
-            navigate("/profile");
+            const data = await login(email, password);
+            handleLoginSuccess(data.token, { email });
+            // ← Acum merge la dashboard, nu la profile
+            navigate("/dashboard");
         } catch (err) {
-            setErrors({ general: err.message });
+            setErrors({ general: err.message || "Email sau parolă greșite." });
         } finally {
             setLoading(false);
         }

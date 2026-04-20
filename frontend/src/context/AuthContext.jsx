@@ -1,22 +1,18 @@
-// ============================================================
 // src/context/AuthContext.jsx
 // Context global pentru starea de autentificare.
-// Folosit de orice componentă care are nevoie de datele userului.
-// ============================================================
+// Login returnează doar token → profilul complet se preia separat cu getProfile().
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { getProfile, logout as apiLogout } from "../services/api";
-import { MOCK_USERS } from "../services/mockData";
+import { logout as apiLogout } from "../services/api";
 
 const AuthContext = createContext(null);
 
-// ─── Provider ─────────────────────────────────────────────────
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // La mount, verificăm dacă există user salvat în localStorage
+        // La mount: refacem starea din localStorage (dacă userul era logat)
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
             try {
@@ -30,7 +26,9 @@ export function AuthProvider({ children }) {
 
     /**
      * Apelat după login cu succes.
-     * Salvează token-ul și datele userului.
+     * @param {string} token   - JWT primit de la backend
+     * @param {object} userData - date minimale cunoscute la login (ex: { email })
+     *                           Profilul complet se încarcă în ProfilePage via getProfile().
      */
     function handleLoginSuccess(token, userData) {
         localStorage.setItem("token", token);
@@ -39,38 +37,31 @@ export function AuthProvider({ children }) {
     }
 
     /**
-     * Deconectare – curăță tot state-ul și localStorage.
+     * Actualizează datele de user în context și localStorage.
+     * Apelat din ProfilePage după ce getProfile() returnează profilul complet.
      */
-    function handleLogout() {
-        apiLogout();
-        setUser(null);
+    function setUserData(userData) {
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
     }
 
     /**
-     * Reîncarcă profilul de la server (ex: după update).
-     * Folosit cu MOCK_USERS în dev, înlocuit cu getProfile() în prod.
+     * Deconectare – curăță token-ul și starea.
      */
-    async function refreshProfile(role = "tourist") {
-        try {
-            // TODO: Înlocuiește cu: const fresh = await getProfile();
-            const fresh = MOCK_USERS[role]; // ← MOCK – șterge când backend-ul e gata
-            setUser(fresh);
-            localStorage.setItem("user", JSON.stringify(fresh));
-        } catch (err) {
-            console.error("Nu s-a putut reîncărca profilul:", err);
-        }
+    function handleLogout() {
+        apiLogout(); // șterge token și user din localStorage
+        setUser(null);
     }
 
     return (
         <AuthContext.Provider
-            value={{ user, loading, handleLoginSuccess, handleLogout, refreshProfile }}
+            value={{ user, loading, handleLoginSuccess, handleLogout, setUserData }}
         >
             {children}
         </AuthContext.Provider>
     );
 }
 
-// ─── Hook ─────────────────────────────────────────────────────
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error("useAuth trebuie folosit în interiorul AuthProvider");

@@ -1,83 +1,8 @@
-/* Stiluri pentru Navigație */
-.app-nav {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  justify-content: center;
-}
-
-.app-nav a {
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 500;
-}
-
-.app-nav a.active {
-  color: var(--accent);
-  border-bottom: 2px solid var(--accent);
-}
-
-/* Stiluri pentru Pagina de Profil */
-.profile-page-container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  text-align: center;
-}
-
-.avatar-circle {
-  width: 80px;
-  height: 80px;
-  background-color: var(--accent);
-  color: white;
-  border-radius: 50%;
+.placeholder-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  font-weight: bold;
-  margin: 0 auto 15px;
-}
-
-.role-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  background: var(--accent-bg);
-  color: var(--accent);
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-top: -10px;
-  margin-bottom: 20px;
-}
-
-.info-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: 20px;
-  border-radius: 8px;
-  text-align: left;
-  margin-bottom: 20px;
-}
-
-.stats-grid {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-.stat-item {
-  background: var(--social-bg);
-  padding: 15px;
-  border-radius: 8px;
-  flex: 1;
-}
-
-.stat-value {
-  display: block;
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--text-h);
+  min-height: 60vh;
+  font-size: 1.5rem;
+  color: var(--text);
 }
