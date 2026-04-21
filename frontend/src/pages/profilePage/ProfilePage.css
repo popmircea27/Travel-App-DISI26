@@ -1,0 +1,237 @@
+/* src/pages/profilePage/ProfilePage.css
+   Folosește variabilele din index.css: --accent, --border, --text, --text-h, --bg, etc.
+*/
+
+/* ─── Page wrapper ─────────────────────────────────────────── */
+.pp-page {
+    min-height: calc(100vh - 61px); /* minus nav height */
+    padding: 40px 20px 60px;
+    background: var(--bg);
+}
+
+.pp-container {
+    max-width: 580px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ─── Header ───────────────────────────────────────────────── */
+.pp-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 28px 24px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Linie de accent sus */
+.pp-header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+}
+
+/* ─── Avatar ───────────────────────────────────────────────── */
+.pp-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px var(--accent-border);
+}
+
+.pp-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0; /* pentru text overflow */
+}
+
+.pp-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-h);
+    margin: 0;
+    word-break: break-all;
+}
+
+/* role-badge este deja definit în App.css – nu redefinim */
+
+/* ─── Sections ─────────────────────────────────────────────── */
+.pp-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pp-section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    margin: 0;
+    padding-left: 2px;
+}
+
+/* ─── Info card (refolosește .info-card din App.css) ─────────
+   Adăugăm doar stiluri pentru rânduri.                       */
+.pp-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+}
+
+.pp-info-row:last-child {
+    border-bottom: none;
+}
+
+.pp-info-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    flex-shrink: 0;
+}
+
+.pp-info-value {
+    font-size: 0.9rem;
+    color: var(--text-h);
+    text-align: right;
+    word-break: break-all;
+}
+
+/* ─── Stat label (completează .stat-item din App.css) ──────── */
+.stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ─── Logout button ────────────────────────────────────────── */
+.pp-logout-btn {
+    align-self: center;
+    padding: 10px 28px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.pp-logout-btn:hover {
+    border-color: #e53935;
+    color: #e53935;
+    background: rgba(229, 57, 53, 0.06);
+}
+
+/* ─── Skeleton ─────────────────────────────────────────────── */
+@keyframes pp-shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+.pp-skeleton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 0;
+}
+
+.pp-sk-avatar,
+.pp-sk-line,
+.pp-sk-card {
+    background: linear-gradient(90deg, var(--border) 25%, var(--code-bg) 50%, var(--border) 75%);
+    background-size: 800px 100%;
+    animation: pp-shimmer 1.4s infinite linear;
+    border-radius: 6px;
+}
+
+.pp-sk-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+}
+
+.pp-sk-line { height: 14px; }
+.pp-sk-wide { width: 220px; }
+.pp-sk-narrow { width: 130px; }
+
+.pp-sk-card {
+    width: 100%;
+    height: 120px;
+    margin-top: 8px;
+    border-radius: 12px;
+}
+
+/* ─── Error state ───────────────────────────────────────────── */
+.pp-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 48px 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.pp-error-icon {
+    font-size: 2rem;
+}
+
+.pp-error p {
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.pp-retry-btn {
+    padding: 8px 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.pp-retry-btn:hover { opacity: 0.85; }
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .pp-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pp-name { font-size: 1rem; }
+}

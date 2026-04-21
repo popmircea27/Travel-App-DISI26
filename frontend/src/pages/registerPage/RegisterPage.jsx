@@ -14,6 +14,7 @@ function RegisterPage() {
         const newErrors = {};
         if (!email) newErrors.email = "Email-ul este obligatoriu";
         if (!password) newErrors.password = "Parola este obligatorie";
+        else if (password.length < 6) newErrors.password = "Parola trebuie să aibă minim 6 caractere";
         return newErrors;
     };
 
@@ -26,17 +27,17 @@ function RegisterPage() {
         }
 
         setLoading(true);
+        setErrors({});
         try {
-            // Când backend-ul e gata, decomentează asta:
-            // await register(email, password);
+            // Apel real: POST /api/auth/register
+            // Backend primește: { email, password }
+            // Backend returnează: { id, email, role, createdAt }
+            await register(email, password);
 
-            // --- MOCK temporar ---
-            console.log("Register mock cu:", email, password);
-            // ---------------------
-
+            // După înregistrare cu succes → redirect la login
             navigate("/login");
         } catch (err) {
-            setErrors({ general: err.message });
+            setErrors({ general: err.message || "Înregistrarea a eșuat. Încearcă din nou." });
         } finally {
             setLoading(false);
         }
@@ -45,7 +46,6 @@ function RegisterPage() {
     return (
         <div className="auth-container">
             <div className="auth-card">
-
                 <h2>Creează cont</h2>
                 <p className="auth-subtitle">Alătură-te comunității noastre</p>
 
@@ -67,7 +67,7 @@ function RegisterPage() {
                         <label>Parolă</label>
                         <input
                             type="password"
-                            placeholder="Alege o parolă"
+                            placeholder="Minim 6 caractere"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
