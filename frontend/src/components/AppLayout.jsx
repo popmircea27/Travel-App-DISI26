@@ -1,6 +1,4 @@
 // src/components/AppLayout.jsx
-// Layout-ul paginilor autentificate: navbar sus + conținut jos.
-// Navbarul are: brand, link Dashboard, link Profil, buton Logout.
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -34,6 +32,16 @@ export default function AppLayout({ children }) {
                     >
                         <span>🏠</span>
                         <span>Dashboard</span>
+                    </NavLink>
+
+                    <NavLink
+                        to="/locations"
+                        className={({ isActive }) =>
+                            "app-navbar__link" + (isActive ? " active" : "")
+                        }
+                    >
+                        <span>📍</span>
+                        <span>Locații</span>
                     </NavLink>
 
                     <NavLink

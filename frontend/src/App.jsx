@@ -1,14 +1,4 @@
 // src/App.jsx
-// Structura rutelor:
-//
-//  PUBLIC  (fără navbar):
-//    /              → HomePage
-//    /login         → LoginPage
-//    /register      → RegisterPage
-//
-//  PRIVATE (cu navbar AppLayout, protejate de PrivateRoute):
-//    /dashboard     → DashboardPage
-//    /profile       → ProfilePage
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -19,10 +9,11 @@ import LoginPage    from "./pages/loginPage/LoginPage.jsx";
 import RegisterPage from "./pages/registerPage/RegisterPage.jsx";
 
 // Pagini private
-import DashboardPage from "./pages/dashboardPage/DashboardPage.jsx";
-import ProfilePage   from "./pages/profilePage/ProfilePage.jsx";
+import DashboardPage  from "./pages/dashboardPage/DashboardPage.jsx";
+import ProfilePage    from "./pages/profilePage/ProfilePage.jsx";
+import LocationsPage  from "./pages/locationsPage/LocationsPage.jsx";
 
-// Componente de layout / protecție
+// Layout / protecție
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import AppLayout    from "./components/AppLayout.jsx";
 
@@ -37,27 +28,16 @@ function App() {
                     <Route path="/login"    element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
 
-                    {/* ── Rute PRIVATE – cu navbar, necesită autentificare ── */}
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <PrivateRoute>
-                                <AppLayout>
-                                    <DashboardPage />
-                                </AppLayout>
-                            </PrivateRoute>
-                        }
-                    />
-                    <Route
-                        path="/profile"
-                        element={
-                            <PrivateRoute>
-                                <AppLayout>
-                                    <ProfilePage />
-                                </AppLayout>
-                            </PrivateRoute>
-                        }
-                    />
+                    {/* ── Rute PRIVATE – cu navbar ── */}
+                    <Route path="/dashboard" element={
+                        <PrivateRoute><AppLayout><DashboardPage /></AppLayout></PrivateRoute>
+                    } />
+                    <Route path="/profile" element={
+                        <PrivateRoute><AppLayout><ProfilePage /></AppLayout></PrivateRoute>
+                    } />
+                    <Route path="/locations" element={
+                        <PrivateRoute><AppLayout><LocationsPage /></AppLayout></PrivateRoute>
+                    } />
 
                 </Routes>
             </BrowserRouter>
