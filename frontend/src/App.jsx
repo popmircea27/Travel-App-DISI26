@@ -12,6 +12,7 @@ import RegisterPage from "./pages/registerPage/RegisterPage.jsx";
 import DashboardPage from "./pages/dashboardPage/DashboardPage.jsx";
 import ProfilePage   from "./pages/profilePage/ProfilePage.jsx";
 import LocationsPage from "./pages/locationsPage/LocationsPage.jsx";
+import LocationDetailsPage from "./pages/locationDetailsPage/LocationDetailsPage.jsx";
 import ContactPage   from "./pages/contactPage/ContactPage.jsx";
 
 // Layout / protecție
@@ -38,6 +39,9 @@ function App() {
                     } />
                     <Route path="/locations" element={
                         <PrivateRoute><AppLayout><LocationsPage /></AppLayout></PrivateRoute>
+                    } />
+                    <Route path="/locations/:id" element={
+                        <PrivateRoute><AppLayout><LocationDetailsPage /></AppLayout></PrivateRoute>
                     } />
                     <Route path="/contact" element={
                         <PrivateRoute><AppLayout><ContactPage /></AppLayout></PrivateRoute>
