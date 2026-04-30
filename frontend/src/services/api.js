@@ -178,23 +178,11 @@ export async function deleteLocation(id) {
     return request(`/locations/${id}`, { method: "DELETE" });
 }
 
-// ─── REVIEWS ──────────────────────────────────────────────────
-
-/**
- * Returnează review-urile pentru o locație.
- * @param {string|number} locationId
- * @returns {Promise<object[]>}
- */
+// ─── REVIEWS (extins cu editare/ștergere) ────────────────────
 export async function getReviews(locationId) {
     return request(`/locations/${locationId}/reviews`);
 }
 
-/**
- * Adaugă un review la o locație.
- * @param {string|number} locationId
- * @param {object} reviewData  - { rating, comment }
- * @returns {Promise<object>}
- */
 export async function addReview(locationId, reviewData) {
     return request(`/locations/${locationId}/reviews`, {
         method: "POST",
@@ -202,6 +190,16 @@ export async function addReview(locationId, reviewData) {
     });
 }
 
+export async function updateReview(reviewId, reviewData) {
+    return request(`/reviews/${reviewId}`, {
+        method: "PUT",
+        body: JSON.stringify(reviewData),
+    });
+}
+
+export async function deleteReview(reviewId) {
+    return request(`/reviews/${reviewId}`, { method: "DELETE" });
+}
 // ─── CONTACT ──────────────────────────────────────────────────
 
 /**
@@ -217,4 +215,30 @@ export async function sendContactMessage(subject, message) {
         method: "POST",
         body: JSON.stringify({ subject, message }),
     });
+
+}
+// ─── UPLOAD IMAGE (pentru admini) ────────────────────────────
+export async function uploadLocationImage(locationId, file) {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(`${BASE_URL}/locations/${locationId}/image`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            // Nu pune Content-Type – browserul setează boundary-ul corect
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        let errorMessage = `Upload failed: ${response.status}`;
+        try {
+            const data = await response.json();
+            errorMessage = data.message || errorMessage;
+        } catch {}
+        throw new Error(errorMessage);
+    }
+    return response.json();
 }

@@ -11,7 +11,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import "./LocationsPage.css";
 
 // ─── LocationCard ──────────────────────────────────────────────
-function LocationCard({ location }) {
+function LocationCard({ location, onOpen }) {
     const shortDesc = location.description
         ? location.description.length > 120
             ? location.description.slice(0, 120).trimEnd() + "…"
@@ -19,7 +19,19 @@ function LocationCard({ location }) {
         : "Nicio descriere disponibilă.";
 
     return (
-        <article className="loc-card">
+        <article
+            className="loc-card"
+            onClick={() => onOpen(location.id)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onOpen(location.id);
+                }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={`Vezi detalii pentru ${location.name}`}
+        >
             <div className="loc-card__img-wrap">
                 {location.imageUrl ? (
                     <img
@@ -286,6 +298,7 @@ export default function LocationsPage() {
     // Câte filtre active (fără sort)
     const activeFilterCount = [search, country, city].filter(Boolean).length;
     const hasFilters = activeFilterCount > 0;
+    const openLocationDetails = (id) => navigate(`/locations/${id}`);
 
     return (
         <div className="loc-page">
@@ -332,7 +345,7 @@ export default function LocationsPage() {
             {!loading && !error && filtered.length > 0 && (
                 <div className="loc-grid">
                     {filtered.map((loc) => (
-                        <LocationCard key={loc.id} location={loc} />
+                        <LocationCard key={loc.id} location={loc} onOpen={openLocationDetails} />
                     ))}
                 </div>
             )}
