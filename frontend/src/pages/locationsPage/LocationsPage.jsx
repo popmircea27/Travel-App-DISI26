@@ -238,6 +238,38 @@ export default function LocationsPage() {
             setLoading(false);
         }
     };
+    /*const fetchLocations = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            // 🔥 DATE FAKE (mock)
+            const data = [
+                {
+                    id: 1,
+                    name: "Castelul Bran",
+                    city: "Brașov",
+                    country: "România",
+                    description: "Unul dintre cele mai cunoscute castele din România.",
+                    imageUrl: ""
+                },
+                {
+                    id: 2,
+                    name: "Salina Turda",
+                    city: "Turda",
+                    country: "România",
+                    description: "O salină spectaculoasă transformată în atracție turistică.",
+                    imageUrl: ""
+                }
+            ];
+
+            setLocations(data);
+        } catch (err) {
+            setError("Eroare la încărcare");
+        } finally {
+            setLoading(false);
+        }
+    };*/
 
     useEffect(() => { fetchLocations(); }, []);
 

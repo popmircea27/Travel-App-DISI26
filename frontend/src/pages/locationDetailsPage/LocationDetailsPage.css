@@ -19,6 +19,17 @@
     cursor: pointer;
 }
 
+.ld-btn--primary {
+    background: #2d6cdf;
+    border-color: #2d6cdf;
+    color: #fff;
+}
+
+.ld-btn--primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .ld-media {
     width: 100%;
     min-height: 260px;
@@ -69,6 +80,54 @@
     display: grid;
     gap: 0.75rem;
 }
+
+.ld-review-form {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0.4rem 0 1rem;
+    padding: 0.9rem;
+    border-radius: 10px;
+    background: #1e293b;        /* la fel ca .ld-card */
+    border: 1px solid #334155;
+}
+
+.ld-review-form__row {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.ld-review-form__row label {
+    font-weight: 600;
+    color: #e2e8f0;             /* text deschis, nu gri închis */
+}
+
+.ld-review-form__row select,
+.ld-review-form__row textarea {
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem;
+    font: inherit;
+    background: #0f172a;        /* fundal foarte închis */
+    color: #f1f5f9;             /* text alb-gri deschis */
+}
+
+/* placeholder text mai moale */
+.ld-review-form__row textarea::placeholder {
+    color: #94a3b8;
+}
+.ld-review-form__row select:focus,
+.ld-review-form__row textarea:focus {
+    outline: none;
+    border-color: #2d6cdf;
+    box-shadow: 0 0 0 2px rgba(45, 108, 223, 0.25);
+}
+
+.ld-review-form__error {
+    color: #f87171;             /* roșu mai blând pe dark */
+    font-size: 0.92rem;
+    margin: 0;
+}
+
 
 .ld-review {
     border: 1px solid #e8ecf3;
