@@ -1,18 +1,17 @@
 // src/pages/locationsPage/LocationsPage.jsx
-// Afișează lista locațiilor turistice din backend.
-// GET /api/locations → array de Location objects
-// Câmpuri Location: id, name, description, latitude, longitude,
-//                   country, city, imageUrl, createdAt, updatedAt
+//
+// Filtrare client-side pe datele încărcate de la GET /api/locations.
+// Când backend-ul adaugă suport pentru query params, înlocuiești
+// doar apelul din fetchLocations() – UI-ul rămâne neschimbat.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getLocations } from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "./LocationsPage.css";
 
-// ─── Card individual ───────────────────────────────────────────
+// ─── LocationCard ──────────────────────────────────────────────
 function LocationCard({ location }) {
-    // Prescurtare descriere la max 120 caractere
     const shortDesc = location.description
         ? location.description.length > 120
             ? location.description.slice(0, 120).trimEnd() + "…"
@@ -21,7 +20,6 @@ function LocationCard({ location }) {
 
     return (
         <article className="loc-card">
-            {/* Imagine sau placeholder */}
             <div className="loc-card__img-wrap">
                 {location.imageUrl ? (
                     <img
@@ -44,28 +42,24 @@ function LocationCard({ location }) {
                 </div>
             </div>
 
-            {/* Conținut */}
             <div className="loc-card__body">
                 <h2 className="loc-card__name">{location.name}</h2>
-
-                {/* Localizare: city + country */}
                 {(location.city || location.country) && (
                     <p className="loc-card__location">
-                        <span className="loc-card__location-icon" aria-hidden="true">📌</span>
+                        <span aria-hidden="true">📌</span>
                         {[location.city, location.country].filter(Boolean).join(", ")}
                     </p>
                 )}
-
                 <p className="loc-card__desc">{shortDesc}</p>
             </div>
         </article>
     );
 }
 
-// ─── Skeleton loading ──────────────────────────────────────────
+// ─── Skeleton ──────────────────────────────────────────────────
 function LocationsSkeleton() {
     return (
-        <div className="loc-grid" aria-label="Se încarcă locațiile...">
+        <div className="loc-grid" aria-label="Se încarcă...">
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="loc-card loc-card--skeleton">
                     <div className="loc-sk loc-sk--img" />
@@ -81,18 +75,28 @@ function LocationsSkeleton() {
     );
 }
 
-// ─── Empty state ───────────────────────────────────────────────
-function EmptyState() {
+// ─── Empty / Error ─────────────────────────────────────────────
+function EmptyState({ hasFilters, onReset }) {
     return (
         <div className="loc-empty">
-            <span className="loc-empty__icon" aria-hidden="true">🗺️</span>
-            <h2>Nicio locație găsită</h2>
-            <p>Nu există locații disponibile momentan. Revino mai târziu!</p>
+            <span className="loc-empty__icon" aria-hidden="true">
+                {hasFilters ? "🔍" : "🗺️"}
+            </span>
+            <h2>{hasFilters ? "Niciun rezultat" : "Nicio locație găsită"}</h2>
+            <p>
+                {hasFilters
+                    ? "Nicio locație nu corespunde filtrelor aplicate."
+                    : "Nu există locații disponibile momentan. Revino mai târziu!"}
+            </p>
+            {hasFilters && (
+                <button className="loc-reset-btn" onClick={onReset} type="button">
+                    Resetează filtrele
+                </button>
+            )}
         </div>
     );
 }
 
-// ─── Error state ───────────────────────────────────────────────
 function ErrorState({ message, onRetry }) {
     return (
         <div className="loc-error" role="alert">
@@ -106,28 +110,113 @@ function ErrorState({ message, onRetry }) {
     );
 }
 
-// ─── Componenta principală ─────────────────────────────────────
+// ─── Bara de filtre ────────────────────────────────────────────
+function FilterBar({ search, onSearch, country, onCountry, city, onCity,
+                       sortBy, onSort, countries, cities, onReset, activeCount }) {
+    return (
+        <div className="loc-filterbar">
+            {/* Search */}
+            <div className="loc-filter-group loc-filter-group--search">
+                <span className="loc-filter-icon" aria-hidden="true">🔍</span>
+                <input
+                    className="loc-filter-input"
+                    type="search"
+                    placeholder="Caută după nume sau descriere…"
+                    value={search}
+                    onChange={(e) => onSearch(e.target.value)}
+                    aria-label="Caută locații"
+                />
+                {search && (
+                    <button
+                        className="loc-filter-clear"
+                        onClick={() => onSearch("")}
+                        type="button"
+                        aria-label="Șterge căutarea"
+                    >
+                        ✕
+                    </button>
+                )}
+            </div>
+
+            {/* Country select */}
+            <select
+                className="loc-filter-select"
+                value={country}
+                onChange={(e) => { onCountry(e.target.value); onCity(""); }}
+                aria-label="Filtrează după țară"
+            >
+                <option value="">Toate țările</option>
+                {countries.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                ))}
+            </select>
+
+            {/* City select */}
+            <select
+                className="loc-filter-select"
+                value={city}
+                onChange={(e) => onCity(e.target.value)}
+                disabled={cities.length === 0}
+                aria-label="Filtrează după oraș"
+            >
+                <option value="">Toate orașele</option>
+                {cities.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                ))}
+            </select>
+
+            {/* Sort */}
+            <select
+                className="loc-filter-select"
+                value={sortBy}
+                onChange={(e) => onSort(e.target.value)}
+                aria-label="Sortează"
+            >
+                <option value="default">Sortare: implicită</option>
+                <option value="name_asc">Nume A → Z</option>
+                <option value="name_desc">Nume Z → A</option>
+                <option value="newest">Cele mai noi</option>
+            </select>
+
+            {/* Reset */}
+            {activeCount > 0 && (
+                <button
+                    className="loc-filter-reset"
+                    onClick={onReset}
+                    type="button"
+                >
+                    Resetează ({activeCount})
+                </button>
+            )}
+        </div>
+    );
+}
+
+// ─── Pagina principală ─────────────────────────────────────────
 export default function LocationsPage() {
     const { handleLogout } = useAuth();
     const navigate = useNavigate();
 
+    // ── Date brute de la API
     const [locations, setLocations] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [loading, setLoading]     = useState(true);
+    const [error, setError]         = useState(null);
 
+    // ── State filtre
+    const [search,  setSearch]  = useState("");
+    const [country, setCountry] = useState("");
+    const [city,    setCity]    = useState("");
+    const [sortBy,  setSortBy]  = useState("default");
+
+    // ── Fetch
     const fetchLocations = async () => {
         setLoading(true);
         setError(null);
         try {
-            // GET /api/locations – necesită Bearer token
-            const data = await getLocations();
+            const data = await getLocations({ search, country, city, sortBy });
             setLocations(Array.isArray(data) ? data : []);
         } catch (err) {
-            // Token expirat → redirect la login
-            if (
-                err.message.includes("401") ||
-                err.message.toLowerCase().includes("unauthorized")
-            ) {
+            if (err.message.includes("401") || err.message.toLowerCase().includes("unauthorized")) {
                 handleLogout();
                 navigate("/login");
             } else {
@@ -138,40 +227,114 @@ export default function LocationsPage() {
         }
     };
 
-    useEffect(() => {
-        fetchLocations();
-    }, []);
+    useEffect(() => { fetchLocations(); }, []);
+
+    // ── Liste unice pentru selecturi (derivate din date)
+    const countries = useMemo(() => {
+        const set = new Set(locations.map((l) => l.country).filter(Boolean));
+        return [...set].sort();
+    }, [locations]);
+
+    // Orașele se filtrează după țara selectată
+    const cities = useMemo(() => {
+        const source = country
+            ? locations.filter((l) => l.country === country)
+            : locations;
+        const set = new Set(source.map((l) => l.city).filter(Boolean));
+        return [...set].sort();
+    }, [locations, country]);
+
+    // ── Filtrare + sortare client-side
+    const filtered = useMemo(() => {
+        let result = [...locations];
+
+        // search: caută în name + description
+        if (search.trim()) {
+            const q = search.trim().toLowerCase();
+            result = result.filter(
+                (l) =>
+                    l.name?.toLowerCase().includes(q) ||
+                    l.description?.toLowerCase().includes(q)
+            );
+        }
+
+        // country
+        if (country) result = result.filter((l) => l.country === country);
+
+        // city
+        if (city) result = result.filter((l) => l.city === city);
+
+        // sort
+        if (sortBy === "name_asc")
+            result.sort((a, b) => a.name?.localeCompare(b.name));
+        else if (sortBy === "name_desc")
+            result.sort((a, b) => b.name?.localeCompare(a.name));
+        else if (sortBy === "newest")
+            result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        return result;
+    }, [locations, search, country, city, sortBy]);
+
+    // ── Reset toate filtrele
+    const resetFilters = () => {
+        setSearch("");
+        setCountry("");
+        setCity("");
+        setSortBy("default");
+    };
+
+    // Câte filtre active (fără sort)
+    const activeFilterCount = [search, country, city].filter(Boolean).length;
+    const hasFilters = activeFilterCount > 0;
 
     return (
         <div className="loc-page">
             {/* ── Header ── */}
             <div className="loc-header">
                 <h1 className="loc-title">Locații turistice</h1>
-                <p className="loc-subtitle">
-                    Explorează destinații din toată România
-                </p>
+                <p className="loc-subtitle">Explorează destinații din toată România</p>
             </div>
 
-            {/* ── Conținut ── */}
+            {/* ── Filtre – vizibile doar când datele sunt încărcate ── */}
+            {!loading && !error && (
+                <FilterBar
+                    search={search}     onSearch={setSearch}
+                    country={country}   onCountry={setCountry}
+                    city={city}         onCity={setCity}
+                    sortBy={sortBy}     onSort={setSortBy}
+                    countries={countries}
+                    cities={cities}
+                    onReset={resetFilters}
+                    activeCount={activeFilterCount}
+                />
+            )}
+
+            {/* ── Counter rezultate ── */}
+            {!loading && !error && locations.length > 0 && (
+                <p className="loc-count">
+                    {hasFilters
+                        ? `${filtered.length} din ${locations.length} locații`
+                        : `${locations.length} ${locations.length === 1 ? "locație" : "locații"} disponibile`}
+                </p>
+            )}
+
+            {/* ── Stări ── */}
             {loading && <LocationsSkeleton />}
 
             {!loading && error && (
                 <ErrorState message={error} onRetry={fetchLocations} />
             )}
 
-            {!loading && !error && locations.length === 0 && <EmptyState />}
+            {!loading && !error && filtered.length === 0 && (
+                <EmptyState hasFilters={hasFilters} onReset={resetFilters} />
+            )}
 
-            {!loading && !error && locations.length > 0 && (
-                <>
-                    <p className="loc-count">
-                        {locations.length} {locations.length === 1 ? "locație" : "locații"} disponibile
-                    </p>
-                    <div className="loc-grid">
-                        {locations.map((loc) => (
-                            <LocationCard key={loc.id} location={loc} />
-                        ))}
-                    </div>
-                </>
+            {!loading && !error && filtered.length > 0 && (
+                <div className="loc-grid">
+                    {filtered.map((loc) => (
+                        <LocationCard key={loc.id} location={loc} />
+                    ))}
+                </div>
             )}
         </div>
     );
