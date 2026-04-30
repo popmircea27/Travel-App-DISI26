@@ -201,3 +201,20 @@ export async function addReview(locationId, reviewData) {
         body: JSON.stringify(reviewData),
     });
 }
+
+// ─── CONTACT ──────────────────────────────────────────────────
+
+/**
+ * Trimite un mesaj de contact către admin.
+ * POST /api/contact
+ * Body: { subject, message }
+ * Răspuns așteptat: { id, subject, message, userEmail, createdAt } sau 204
+ *
+ * Colega de backend va implementa endpoint-ul pe baza acestui contract.
+ */
+export async function sendContactMessage(subject, message) {
+    return request("/contact", {
+        method: "POST",
+        body: JSON.stringify({ subject, message }),
+    });
+}

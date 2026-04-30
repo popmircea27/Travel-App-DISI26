@@ -9,9 +9,10 @@ import LoginPage    from "./pages/loginPage/LoginPage.jsx";
 import RegisterPage from "./pages/registerPage/RegisterPage.jsx";
 
 // Pagini private
-import DashboardPage  from "./pages/dashboardPage/DashboardPage.jsx";
-import ProfilePage    from "./pages/profilePage/ProfilePage.jsx";
-import LocationsPage  from "./pages/locationsPage/LocationsPage.jsx";
+import DashboardPage from "./pages/dashboardPage/DashboardPage.jsx";
+import ProfilePage   from "./pages/profilePage/ProfilePage.jsx";
+import LocationsPage from "./pages/locationsPage/LocationsPage.jsx";
+import ContactPage   from "./pages/contactPage/ContactPage.jsx";
 
 // Layout / protecție
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -23,12 +24,12 @@ function App() {
             <BrowserRouter>
                 <Routes>
 
-                    {/* ── Rute PUBLICE – fără navbar ── */}
+                    {/* ── Rute PUBLICE ── */}
                     <Route path="/"         element={<HomePage />} />
                     <Route path="/login"    element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
 
-                    {/* ── Rute PRIVATE – cu navbar ── */}
+                    {/* ── Rute PRIVATE ── */}
                     <Route path="/dashboard" element={
                         <PrivateRoute><AppLayout><DashboardPage /></AppLayout></PrivateRoute>
                     } />
@@ -37,6 +38,9 @@ function App() {
                     } />
                     <Route path="/locations" element={
                         <PrivateRoute><AppLayout><LocationsPage /></AppLayout></PrivateRoute>
+                    } />
+                    <Route path="/contact" element={
+                        <PrivateRoute><AppLayout><ContactPage /></AppLayout></PrivateRoute>
                     } />
 
                 </Routes>
