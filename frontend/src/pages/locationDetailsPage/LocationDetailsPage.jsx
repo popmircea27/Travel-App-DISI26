@@ -46,6 +46,7 @@ function ReviewItem({ review }) {
 }
 
 export default function LocationDetailsPage() {
+    const REVIEWS_PER_PAGE = 4;
     const { id } = useParams();
     const navigate = useNavigate();
     const { handleLogout } = useAuth();
@@ -58,6 +59,13 @@ export default function LocationDetailsPage() {
     const [comment, setComment] = useState("");
     const [formError, setFormError] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const [reviewsPage, setReviewsPage] = useState(1);
+
+    const totalReviewPages = Math.max(1, Math.ceil(reviews.length / REVIEWS_PER_PAGE));
+    const paginatedReviews = reviews.slice(
+        (reviewsPage - 1) * REVIEWS_PER_PAGE,
+        reviewsPage * REVIEWS_PER_PAGE,
+    );
 
     const fetchLocationDetails = async () => {
         setLoading(true);
@@ -71,6 +79,7 @@ export default function LocationDetailsPage() {
 
             setLocation(locationData || null);
             setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+            setReviewsPage(1);
         } catch (err) {
             if (err.message.includes("401") || err.message.toLowerCase().includes("unauthorized")) {
                 handleLogout();
@@ -85,9 +94,7 @@ export default function LocationDetailsPage() {
     /*const fetchLocationDetails = async () => {
         setLoading(true);
         setError(null);
-
         try {
-            // 🔥 DATE FAKE
             const locationData = {
                 id: id,
                 name: id == 1 ? "Castelul Bran" : "Salina Turda",
@@ -99,30 +106,26 @@ export default function LocationDetailsPage() {
                 imageUrl: ""
             };
 
-            const reviewsData = [
-                {
-                    id: 1,
-                    userEmail: "test@email.com",
-                    rating: 5,
-                    comment: "Super loc!"
-                },
-                {
-                    id: 2,
-                    userEmail: "user@email.com",
-                    rating: 4,
-                    comment: "Foarte frumos."
-                }
-            ];
+            // GENEREAZĂ 10 REVIEW-URI FAKE
+            const fakeReviews = [];
+            for (let i = 1; i <= 10; i++) {
+                fakeReviews.push({
+                    id: i,
+                    userEmail: `user${i}@example.com`,
+                    rating: (i % 5) + 1,
+                    comment: `Acesta este review-ul numărul ${i}. Lorem ipsum dolor sit amet.`
+                });
+            }
 
             setLocation(locationData);
-            setReviews(reviewsData);
+            setReviews(fakeReviews);
+            setReviewsPage(1); // asigură-te că ești pe prima pagină
         } catch (err) {
             setError("Eroare la încărcare");
         } finally {
             setLoading(false);
         }
     };*/
-
     useEffect(() => {
         fetchLocationDetails();
     }, [id]);
@@ -159,6 +162,7 @@ export default function LocationDetailsPage() {
                 comment: comment.trim(),
             });
             setReviews((prev) => [createdReview, ...prev]);
+            setReviewsPage(1);
             setRating(5);
             setComment("");
         } catch (err) {
@@ -268,11 +272,37 @@ export default function LocationDetailsPage() {
                 {reviews.length === 0 ? (
                     <p>Nu există review-uri momentan pentru această locație.</p>
                 ) : (
-                    <div className="ld-reviews">
-                        {reviews.map((review) => (
-                            <ReviewItem key={review.id} review={review} />
-                        ))}
-                    </div>
+                    <>
+                        <div className="ld-reviews">
+                            {paginatedReviews.map((review) => (
+                                <ReviewItem key={review.id} review={review} />
+                            ))}
+                        </div>
+
+                        <div className="ld-reviews-pagination" aria-label="Paginare review-uri">
+                            <button
+                                className="ld-btn"
+                                type="button"
+                                onClick={() => setReviewsPage((prev) => Math.max(1, prev - 1))}
+                                disabled={reviewsPage === 1}
+                            >
+                                ← Anterior
+                            </button>
+
+                            <span className="ld-reviews-pagination__info">
+                                Pagina {reviewsPage} din {totalReviewPages}
+                            </span>
+
+                            <button
+                                className="ld-btn"
+                                type="button"
+                                onClick={() => setReviewsPage((prev) => Math.min(totalReviewPages, prev + 1))}
+                                disabled={reviewsPage === totalReviewPages}
+                            >
+                                Următor →
+                            </button>
+                        </div>
+                    </>
                 )}
             </section>
         </div>
