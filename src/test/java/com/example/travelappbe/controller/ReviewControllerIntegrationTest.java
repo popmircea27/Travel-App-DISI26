@@ -99,12 +99,11 @@ class ReviewControllerIntegrationTest {
         Location location = new Location(
                 "Eiffel Tower",
                 "The iconic iron lattice tower built in 1889 for the World's Fair",
-                48.8584,
-                2.2945
+                "Monument",
+                20.0,
+                "Paris"
         );
-        location.setCountry("France");
-        location.setCity("Paris");
-        location.setImageUrl("https://example.com/eiffel-tower.jpg");
+        location.setAdmin(savedUser); // use any valid user
         Location savedLocation = locationRepository.save(location);
         locationId = savedLocation.getId();
     }
@@ -133,8 +132,7 @@ class ReviewControllerIntegrationTest {
                 .andExpect(jsonPath("$.user_id", equalTo(userId.toString())))
                 .andExpect(jsonPath("$.userEmail", equalTo("tourist@example.com")))
                 .andExpect(jsonPath("$.location_id", equalTo(locationId.toString())))
-                .andExpect(jsonPath("$.created_at").exists())
-                .andExpect(jsonPath("$.updated_at").exists());
+                .andExpect(jsonPath("$.created_at").exists());
     }
 
     @Test
@@ -357,10 +355,10 @@ class ReviewControllerIntegrationTest {
         // Act & Assert - Retrieve reviews
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].rating", equalTo(5)))
-                .andExpect(jsonPath("$.content[0].comment", equalTo("Great!")))
-                .andExpect(jsonPath("$.content[0].userEmail", equalTo("tourist@example.com")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].rating", equalTo(5)))
+                .andExpect(jsonPath("$[0].comment", equalTo("Great!")))
+                .andExpect(jsonPath("$[0].userEmail", equalTo("tourist@example.com")));
     }
 
     @Test
@@ -384,16 +382,14 @@ class ReviewControllerIntegrationTest {
         // Act & Assert - Get first page, sorted by creation time
         mockMvc.perform(get("/api/locations/{locationId}/reviews?page=0&size=1&sort=createdAt,asc", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.totalElements", equalTo(2)))
-                .andExpect(jsonPath("$.totalPages", equalTo(2)))
-                .andExpect(jsonPath("$.content[0].comment", equalTo("First review")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].comment", equalTo("First review")));
 
         // Act & Assert - Get second page
         mockMvc.perform(get("/api/locations/{locationId}/reviews?page=1&size=1&sort=createdAt,asc", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].comment", equalTo("Second review")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].comment", equalTo("Second review")));
     }
 
     @Test
@@ -402,7 +398,7 @@ class ReviewControllerIntegrationTest {
         // Act & Assert
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(0)));
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
@@ -437,9 +433,9 @@ class ReviewControllerIntegrationTest {
         // Step 2: Retrieve reviews for the location
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].rating", equalTo(4)))
-                .andExpect(jsonPath("$.content[0].comment", equalTo("Very nice place")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].rating", equalTo(4)))
+                .andExpect(jsonPath("$[0].comment", equalTo("Very nice place")));
     }
 
     @Test
@@ -477,9 +473,9 @@ class ReviewControllerIntegrationTest {
         // Verify both reviews are present
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)))
-                .andExpect(jsonPath("$.content[0].rating", equalTo(5)))
-                .andExpect(jsonPath("$.content[1].rating", equalTo(4)));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].rating", equalTo(5)))
+                .andExpect(jsonPath("$[1].rating", equalTo(4)));
     }
 
     @Test
@@ -508,7 +504,7 @@ class ReviewControllerIntegrationTest {
         // Verify both reviews are present
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
@@ -531,7 +527,6 @@ class ReviewControllerIntegrationTest {
                 .andExpect(jsonPath("$.user_id", notNullValue()))
                 .andExpect(jsonPath("$.userEmail", notNullValue()))
                 .andExpect(jsonPath("$.location_id", notNullValue()))
-                .andExpect(jsonPath("$.created_at", notNullValue()))
-                .andExpect(jsonPath("$.updated_at", notNullValue()));
+                .andExpect(jsonPath("$.created_at", notNullValue()));
     }
 }

@@ -32,6 +32,7 @@ import com.example.travelappbe.dto.LocationResponseDto;
 import com.example.travelappbe.entity.Location;
 import com.example.travelappbe.entity.Review;
 import com.example.travelappbe.entity.User;
+import com.example.travelappbe.entity.UserRole;
 import com.example.travelappbe.repository.LocationRepository;
 import com.example.travelappbe.repository.ReviewRepository;
 
@@ -51,34 +52,33 @@ class LocationServiceTest {
     private Location testLocation;
     private LocationRequestDto requestDto;
     private UUID locationId;
+    private User testAdmin;
 
     @BeforeEach
     void setUp() {
         locationId = UUID.randomUUID();
+        testAdmin = new User("admin@test.com", "hash", UserRole.ADMIN);
+        testAdmin.setId(UUID.randomUUID());
         
         testLocation = new Location(
                 "Central Park",
                 "Large public park in NYC",
-                40.785091,
-                -73.968285
+                "Park",
+                0.0,
+                "New York"
         );
         testLocation.setId(locationId);
-        testLocation.setCountry("USA");
-        testLocation.setCity("New York");
-        testLocation.setCategory("Park");
-        testLocation.setImageUrl("https://example.com/park.jpg");
+        testLocation.setAudioUrl("https://example.com/park.mp3");
+        testLocation.setAdmin(testAdmin);
         testLocation.setCreatedAt(LocalDateTime.now());
-        testLocation.setUpdatedAt(LocalDateTime.now());
 
         requestDto = new LocationRequestDto();
         requestDto.setName("Central Park");
         requestDto.setDescription("Large public park in NYC");
-        requestDto.setLatitude(40.785091);
-        requestDto.setLongitude(-73.968285);
-        requestDto.setCountry("USA");
-        requestDto.setCity("New York");
         requestDto.setCategory("Park");
-        requestDto.setImageUrl("https://example.com/park.jpg");
+        requestDto.setPrice(0.0);
+        requestDto.setLocationName("New York");
+        requestDto.setAudioUrl("https://example.com/park.mp3");
     }
 
     @Test
@@ -106,7 +106,7 @@ class LocationServiceTest {
     void testCreateLocation() {
         when(locationRepository.save(any(Location.class))).thenReturn(testLocation);
 
-        LocationResponseDto response = locationService.createLocation(requestDto);
+        LocationResponseDto response = locationService.createLocation(requestDto, testAdmin);
 
         assertNotNull(response);
         assertEquals("Central Park", response.getName());
@@ -148,11 +148,11 @@ class LocationServiceTest {
 
         when(locationRepository.findAll(pageable)).thenReturn(page);
 
-        Page<LocationResponseDto> result = locationService.getLocations(null, null, pageable);
+        List<LocationResponseDto> result = locationService.getLocations(null, null, pageable);
 
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals("Central Park", result.getContent().get(0).getName());
+        assertEquals(1, result.size());
+        assertEquals("Central Park", result.get(0).getName());
         verify(locationRepository, times(1)).findAll(pageable);
     }
 
@@ -164,10 +164,10 @@ class LocationServiceTest {
 
         when(locationRepository.findAll(any(Example.class), eq(pageable))).thenReturn(page);
 
-        Page<LocationResponseDto> result = locationService.getLocations("Park", "New York", pageable);
+        List<LocationResponseDto> result = locationService.getLocations("Park", "New York", pageable);
 
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.size());
         verify(locationRepository, times(1)).findAll(any(Example.class), eq(pageable));
     }
 

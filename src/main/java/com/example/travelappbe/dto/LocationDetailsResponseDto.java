@@ -18,17 +18,18 @@ public class LocationDetailsResponseDto {
 
     private String description;
 
-    private Double latitude;
-
-    private Double longitude;
-
-    private String country;
-
-    private String city;
+    @JsonProperty("audio_url")
+    private String audioUrl;
 
     private String category;
 
-    private String imageUrl;
+    private Double price;
+
+    @JsonProperty("location_name")
+    private String locationName;
+
+    @JsonProperty("admin_id")
+    private UUID adminId;
 
     @JsonProperty("average_rating")
     private Double averageRating;
@@ -41,31 +42,26 @@ public class LocationDetailsResponseDto {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
-    @JsonProperty("updated_at")
-    private LocalDateTime updatedAt;
-
     // Constructors
     public LocationDetailsResponseDto() {
     }
 
-    public LocationDetailsResponseDto(UUID id, String name, String description, Double latitude, Double longitude,
-                                      String country, String city, String category, String imageUrl, Double averageRating,
+    public LocationDetailsResponseDto(UUID id, String name, String description, String audioUrl, String category,
+                                      Double price, String locationName, UUID adminId, Double averageRating,
                                       Integer totalReviews, List<ReviewResponseDto> reviews,
-                                      LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                      LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.country = country;
-        this.city = city;
+        this.audioUrl = audioUrl;
         this.category = category;
-        this.imageUrl = imageUrl;
+        this.price = price;
+        this.locationName = locationName;
+        this.adminId = adminId;
         this.averageRating = averageRating;
         this.totalReviews = totalReviews;
         this.reviews = reviews;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -93,36 +89,12 @@ public class LocationDetailsResponseDto {
         this.description = description;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public String getAudioUrl() {
+        return audioUrl;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
     }
 
     public String getCategory() {
@@ -133,12 +105,28 @@ public class LocationDetailsResponseDto {
         this.category = category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public UUID getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(UUID adminId) {
+        this.adminId = adminId;
     }
 
     public Double getAverageRating() {
@@ -171,14 +159,6 @@ public class LocationDetailsResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.example.travelappbe.dto.LocationRequestDto;
 import com.example.travelappbe.dto.LocationResponseDto;
 import com.example.travelappbe.dto.ReviewResponseDto;
 import com.example.travelappbe.entity.Location;
+import com.example.travelappbe.entity.User;
 import com.example.travelappbe.entity.Review;
 import com.example.travelappbe.repository.LocationRepository;
 import com.example.travelappbe.repository.ReviewRepository;
@@ -35,11 +36,11 @@ public class LocationService {
      * Retrieves locations with optional filtering and pagination.
      *
      * @param category optional category filter
-     * @param city optional city filter
+     * @param locationName optional locationName filter
      * @param pageable pagination info
      * @return Page of LocationResponseDto
      */
-    public Page<LocationResponseDto> getLocations(String category, String city, Pageable pageable) {
+    public List<LocationResponseDto> getLocations(String category, String locationName, Pageable pageable) {
         Location probe = new Location();
         boolean hasFilters = false;
         
@@ -47,20 +48,21 @@ public class LocationService {
             probe.setCategory(category.trim());
             hasFilters = true;
         }
-        if (city != null && !city.trim().isEmpty()) {
-            probe.setCity(city.trim());
+        if (locationName != null && !locationName.trim().isEmpty()) {
+            probe.setLocationName(locationName.trim());
             hasFilters = true;
         }
         
         if (hasFilters) {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withIgnoreNullValues()
+                    .withIgnorePaths("price")
                     .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
                     .withIgnoreCase();
             Example<Location> example = Example.of(probe, matcher);
-            return locationRepository.findAll(example, pageable).map(this::convertToResponseDto);
+            return locationRepository.findAll(example, pageable).map(this::convertToResponseDto).getContent();
         } else {
-            return locationRepository.findAll(pageable).map(this::convertToResponseDto);
+            return locationRepository.findAll(pageable).map(this::convertToResponseDto).getContent();
         }
     }
 
@@ -110,17 +112,15 @@ public class LocationService {
                 location.getId(),
                 location.getName(),
                 location.getDescription(),
-                location.getLatitude(),
-                location.getLongitude(),
-                location.getCountry(),
-                location.getCity(),
+                location.getAudioUrl(),
                 location.getCategory(),
-                location.getImageUrl(),
+                location.getPrice(),
+                location.getLocationName(),
+                location.getAdmin().getId(),
                 averageRating,
                 reviews.size(),
                 reviewDtos,
-                location.getCreatedAt(),
-                location.getUpdatedAt()
+                location.getCreatedAt()
         );
     }
 
@@ -128,19 +128,19 @@ public class LocationService {
      * Creates a new location (ADMIN ONLY).
      *
      * @param locationRequestDto the location data
+     * @param admin the admin creating this location
      * @return LocationResponseDto
      */
     @Transactional
-    public LocationResponseDto createLocation(LocationRequestDto locationRequestDto) {
+    public LocationResponseDto createLocation(LocationRequestDto locationRequestDto, User admin) {
         Location location = new Location();
         location.setName(locationRequestDto.getName());
         location.setDescription(locationRequestDto.getDescription());
-        location.setLatitude(locationRequestDto.getLatitude());
-        location.setLongitude(locationRequestDto.getLongitude());
-        location.setCountry(locationRequestDto.getCountry());
-        location.setCity(locationRequestDto.getCity());
         location.setCategory(locationRequestDto.getCategory());
-        location.setImageUrl(locationRequestDto.getImageUrl());
+        location.setAudioUrl(locationRequestDto.getAudioUrl());
+        location.setPrice(locationRequestDto.getPrice() != null ? locationRequestDto.getPrice() : 0.0);
+        location.setLocationName(locationRequestDto.getLocationName());
+        location.setAdmin(admin);
 
         Location savedLocation = locationRepository.save(location);
         return convertToResponseDto(savedLocation);
@@ -165,23 +165,17 @@ public class LocationService {
         if (locationRequestDto.getDescription() != null) {
             location.setDescription(locationRequestDto.getDescription());
         }
-        if (locationRequestDto.getLatitude() != null) {
-            location.setLatitude(locationRequestDto.getLatitude());
-        }
-        if (locationRequestDto.getLongitude() != null) {
-            location.setLongitude(locationRequestDto.getLongitude());
-        }
-        if (locationRequestDto.getCountry() != null) {
-            location.setCountry(locationRequestDto.getCountry());
-        }
-        if (locationRequestDto.getCity() != null) {
-            location.setCity(locationRequestDto.getCity());
+        if (locationRequestDto.getAudioUrl() != null) {
+            location.setAudioUrl(locationRequestDto.getAudioUrl());
         }
         if (locationRequestDto.getCategory() != null) {
             location.setCategory(locationRequestDto.getCategory());
         }
-        if (locationRequestDto.getImageUrl() != null) {
-            location.setImageUrl(locationRequestDto.getImageUrl());
+        if (locationRequestDto.getPrice() != null) {
+            location.setPrice(locationRequestDto.getPrice());
+        }
+        if (locationRequestDto.getLocationName() != null) {
+            location.setLocationName(locationRequestDto.getLocationName());
         }
 
         Location updatedLocation = locationRepository.save(location);
@@ -209,14 +203,12 @@ public class LocationService {
                 location.getId(),
                 location.getName(),
                 location.getDescription(),
-                location.getLatitude(),
-                location.getLongitude(),
-                location.getCountry(),
-                location.getCity(),
+                location.getAudioUrl(),
                 location.getCategory(),
-                location.getImageUrl(),
-                location.getCreatedAt(),
-                location.getUpdatedAt()
+                location.getPrice(),
+                location.getLocationName(),
+                location.getAdmin().getId(),
+                location.getCreatedAt()
         );
     }
 
@@ -231,8 +223,7 @@ public class LocationService {
                 review.getUser().getId(),
                 review.getUser().getEmail(),
                 review.getLocation().getId(),
-                review.getCreatedAt(),
-                review.getUpdatedAt()
+                review.getCreatedAt()
         );
     }
 }

@@ -76,12 +76,11 @@ class LocationDetailsIntegrationTest {
         Location location = new Location(
                 "Eiffel Tower",
                 "The iconic iron lattice tower built in 1889 for the World's Fair",
-                48.8584,
-                2.2945
+                "Monument",
+                20.0,
+                "Paris"
         );
-        location.setCountry("France");
-        location.setCity("Paris");
-        location.setImageUrl("https://example.com/eiffel-tower.jpg");
+        location.setAdmin(savedUser);
         Location savedLocation = locationRepository.save(location);
         locationId = savedLocation.getId();
     }
@@ -101,11 +100,8 @@ class LocationDetailsIntegrationTest {
         assertThat(details.getId()).isEqualTo(locationId);
         assertThat(details.getName()).isEqualTo("Eiffel Tower");
         assertThat(details.getDescription()).isEqualTo("The iconic iron lattice tower built in 1889 for the World's Fair");
-        assertThat(details.getCountry()).isEqualTo("France");
-        assertThat(details.getCity()).isEqualTo("Paris");
-        assertThat(details.getLatitude()).isEqualTo(48.8584);
-        assertThat(details.getLongitude()).isEqualTo(2.2945);
-        assertThat(details.getImageUrl()).isEqualTo("https://example.com/eiffel-tower.jpg");
+        assertThat(details.getLocationName()).isEqualTo("Paris");
+        assertThat(details.getPrice()).isEqualTo(20.0);
     }
 
     @Test
@@ -248,14 +244,12 @@ class LocationDetailsIntegrationTest {
 
         // Assert - Verify complete aggregation
         assertThat(details.getName()).isEqualTo("Eiffel Tower");
-        assertThat(details.getCountry()).isEqualTo("France");
-        assertThat(details.getCity()).isEqualTo("Paris");
+        assertThat(details.getLocationName()).isEqualTo("Paris");
         assertThat(details.getTotalReviews()).isEqualTo(3);
         assertThat(details.getAverageRating()).isCloseTo(4.67, within(0.01));
 
         // Verify description and media
         assertThat(details.getDescription()).isNotEmpty();
-        assertThat(details.getImageUrl()).isNotEmpty();
 
         // Verify reviews list
         assertThat(details.getReviews()).hasSize(3);
@@ -272,7 +266,6 @@ class LocationDetailsIntegrationTest {
 
         // Assert
         assertThat(details.getCreatedAt()).isNotNull();
-        assertThat(details.getUpdatedAt()).isNotNull();
     }
 
     @Test

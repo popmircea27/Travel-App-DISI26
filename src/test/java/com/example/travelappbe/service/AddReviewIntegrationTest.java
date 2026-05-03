@@ -79,12 +79,11 @@ class AddReviewIntegrationTest {
         Location location = new Location(
                 "Eiffel Tower",
                 "The iconic iron lattice tower built in 1889 for the World's Fair",
-                48.8584,
-                2.2945
+                "Monument",
+                20.0,
+                "Paris"
         );
-        location.setCountry("France");
-        location.setCity("Paris");
-        location.setImageUrl("https://example.com/eiffel-tower.jpg");
+        location.setAdmin(savedUser);
         Location savedLocation = locationRepository.save(location);
         locationId = savedLocation.getId();
         testLocation = savedLocation;
@@ -215,7 +214,6 @@ class AddReviewIntegrationTest {
 
         // 3. Review contains timestamps
         assertThat(createdReview.getCreatedAt()).isNotNull();
-        assertThat(createdReview.getUpdatedAt()).isNotNull();
     }
 
     // ============================================================
@@ -298,8 +296,6 @@ class AddReviewIntegrationTest {
 
         // Assert
         assertThat(result.getCreatedAt()).isNotNull();
-        assertThat(result.getUpdatedAt()).isNotNull();
-        assertThat(result.getCreatedAt()).isEqualTo(result.getUpdatedAt());
 
         // Verify timestamps are within expected range
         long createdAtMillis = result.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();

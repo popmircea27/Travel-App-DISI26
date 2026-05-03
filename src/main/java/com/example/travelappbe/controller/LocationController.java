@@ -1,6 +1,7 @@
 package com.example.travelappbe.controller;
 
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import com.example.travelappbe.security.JwtTokenProvider;
 import com.example.travelappbe.service.LocationService;
 import com.example.travelappbe.service.ReviewService;
 import com.example.travelappbe.service.UserService;
+import com.example.travelappbe.entity.User;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -54,13 +56,13 @@ public class LocationController {
      * Get locations with optional filtering and pagination.
      *
      * @param category optional category filter
-     * @param city optional city filter
+     * @param locationName optional locationName filter
      * @param pageable pagination info
      * @return ResponseEntity with page of locations
      */
     @GetMapping
-    public ResponseEntity<Page<LocationResponseDto>> getLocations(@RequestParam(required = false) String category, @RequestParam(required = false) String city, Pageable pageable) {
-        Page<LocationResponseDto> locations = locationService.getLocations(category, city, pageable);
+    public ResponseEntity<List<LocationResponseDto>> getLocations(@RequestParam(required = false) String category, @RequestParam(required = false) String locationName, Pageable pageable) {
+        List<LocationResponseDto> locations = locationService.getLocations(category, locationName, pageable);
         return ResponseEntity.ok(locations);
     }
 
@@ -105,8 +107,13 @@ public class LocationController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationRequestDto locationRequestDto) {
-        LocationResponseDto location = locationService.createLocation(locationRequestDto);
+    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationRequestDto locationRequestDto, HttpServletRequest request) {
+        String email = extractEmailFromToken(request);
+        User admin = userService.getUserByEmail(email);
+        if (admin == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        LocationResponseDto location = locationService.createLocation(locationRequestDto, admin);
         return new ResponseEntity<>(location, HttpStatus.CREATED);
     }
 

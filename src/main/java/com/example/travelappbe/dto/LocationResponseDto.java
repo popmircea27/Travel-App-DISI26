@@ -13,48 +13,37 @@ public class LocationResponseDto {
 
     private String description;
 
-    private Double latitude;
-
-    private Double longitude;
-
-    private String country;
-
-    private String city;
-
+    @JsonProperty("audio_url")
+    private String audioUrl;
+    
     private String category;
 
-    private String imageUrl;
+    private Double price;
+
+    @JsonProperty("location_name")
+    private String locationName;
+
+    @JsonProperty("admin_id")
+    private UUID adminId;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
-
-    @JsonProperty("updated_at")
-    private LocalDateTime updatedAt;
 
     // Constructors
     public LocationResponseDto() {
     }
 
-    public LocationResponseDto(UUID id, String name, Double latitude, Double longitude) {
-        this.id = id;
-        this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    public LocationResponseDto(UUID id, String name, String description, Double latitude, Double longitude,
-                               String country, String city, String category, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public LocationResponseDto(UUID id, String name, String description, String audioUrl, String category,
+                               Double price, String locationName, UUID adminId, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.country = country;
-        this.city = city;
+        this.audioUrl = audioUrl;
         this.category = category;
-        this.imageUrl = imageUrl;
+        this.price = price;
+        this.locationName = locationName;
+        this.adminId = adminId;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -82,36 +71,12 @@ public class LocationResponseDto {
         this.description = description;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public String getAudioUrl() {
+        return audioUrl;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
     }
 
     public String getCategory() {
@@ -122,12 +87,28 @@ public class LocationResponseDto {
         this.category = category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public UUID getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(UUID adminId) {
+        this.adminId = adminId;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -138,11 +119,27 @@ public class LocationResponseDto {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    // --- Frontend Compatibility Getters ---
+
+    @JsonProperty("city")
+    public String getCity() {
+        if (this.locationName == null || this.locationName.trim().isEmpty()) {
+            return null;
+        }
+        // Returns the first part before a comma, or the whole string.
+        return this.locationName.split(",")[0].trim();
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    @JsonProperty("country")
+    public String getCountry() {
+        if (this.locationName == null || !this.locationName.contains(",")) {
+            return null;
+        }
+        String[] parts = this.locationName.split(",");
+        // Returns the second part if it exists.
+        return parts.length > 1 ? parts[1].trim() : null;
     }
+
+    @JsonProperty("imageUrl")
+    public String getImageUrl() { return null; }
 }
