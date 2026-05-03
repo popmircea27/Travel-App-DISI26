@@ -89,6 +89,7 @@ public class LocationService {
                 location.getLongitude(),
                 location.getCountry(),
                 location.getCity(),
+                location.getCategory(),
                 location.getImageUrl(),
                 averageRating,
                 reviews.size(),
@@ -113,6 +114,7 @@ public class LocationService {
         location.setLongitude(locationRequestDto.getLongitude());
         location.setCountry(locationRequestDto.getCountry());
         location.setCity(locationRequestDto.getCity());
+        location.setCategory(locationRequestDto.getCategory());
         location.setImageUrl(locationRequestDto.getImageUrl());
 
         Location savedLocation = locationRepository.save(location);
@@ -150,6 +152,9 @@ public class LocationService {
         if (locationRequestDto.getCity() != null) {
             location.setCity(locationRequestDto.getCity());
         }
+        if (locationRequestDto.getCategory() != null) {
+            location.setCategory(locationRequestDto.getCategory());
+        }
         if (locationRequestDto.getImageUrl() != null) {
             location.setImageUrl(locationRequestDto.getImageUrl());
         }
@@ -183,6 +188,7 @@ public class LocationService {
                 location.getLongitude(),
                 location.getCountry(),
                 location.getCity(),
+                location.getCategory(),
                 location.getImageUrl(),
                 location.getCreatedAt(),
                 location.getUpdatedAt()

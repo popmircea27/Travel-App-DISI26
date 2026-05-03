@@ -24,6 +24,8 @@ public class LocationRequestDto {
 
     private String city;
 
+    private String category;
+
     private String imageUrl;
 
     // Constructors
@@ -83,6 +85,14 @@ public class LocationRequestDto {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getImageUrl() {

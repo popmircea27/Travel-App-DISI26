@@ -45,6 +45,9 @@ public class Location {
     @Column(name = "city", length = 100)
     private String city;
 
+    @Column(name = "category", length = 100)
+    private String category;
+
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
@@ -125,6 +128,14 @@ public class Location {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getImageUrl() {

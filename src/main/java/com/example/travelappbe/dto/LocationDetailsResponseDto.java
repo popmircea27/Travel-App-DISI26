@@ -26,6 +26,8 @@ public class LocationDetailsResponseDto {
 
     private String city;
 
+    private String category;
+
     private String imageUrl;
 
     @JsonProperty("average_rating")
@@ -47,7 +49,7 @@ public class LocationDetailsResponseDto {
     }
 
     public LocationDetailsResponseDto(UUID id, String name, String description, Double latitude, Double longitude,
-                                      String country, String city, String imageUrl, Double averageRating,
+                                      String country, String city, String category, String imageUrl, Double averageRating,
                                       Integer totalReviews, List<ReviewResponseDto> reviews,
                                       LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -57,6 +59,7 @@ public class LocationDetailsResponseDto {
         this.longitude = longitude;
         this.country = country;
         this.city = city;
+        this.category = category;
         this.imageUrl = imageUrl;
         this.averageRating = averageRating;
         this.totalReviews = totalReviews;
@@ -120,6 +123,14 @@ public class LocationDetailsResponseDto {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getImageUrl() {
