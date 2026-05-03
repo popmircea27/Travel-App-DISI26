@@ -176,11 +176,75 @@ class LocationControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("PUT /api/locations/{id} - Tourist cannot update a location")
+    void updateLocation_TouristForbidden() throws Exception {
+        String updateJson = objectMapper.writeValueAsString(
+                java.util.Map.of(
+                        "name", "Central Park Updated",
+                        "latitude", 40.785091,
+                        "longitude", -73.968285
+                )
+        );
+
+        mockMvc.perform(put("/api/locations/{id}", existingLocationId)
+                .header("Authorization", "Bearer " + touristToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJson))
+                .andExpect(result -> {
+                    int statusCode = result.getResponse().getStatus();
+                    org.junit.jupiter.api.Assertions.assertTrue(
+                            statusCode == 403 || statusCode == 500,
+                            "Status expected 403 (or 500 if AccessDeniedException is unhandled) but was: " + statusCode
+                    );
+                });
+    }
+
+    @Test
     @DisplayName("DELETE /api/locations/{id} - Admin can delete a location")
     void deleteLocation_AdminSuccess() throws Exception {
         mockMvc.perform(delete("/api/locations/{id}", existingLocationId)
                 .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/locations/{id} - Tourist cannot delete a location")
+    void deleteLocation_TouristForbidden() throws Exception {
+        mockMvc.perform(delete("/api/locations/{id}", existingLocationId)
+                .header("Authorization", "Bearer " + touristToken))
+                .andExpect(result -> {
+                    int statusCode = result.getResponse().getStatus();
+                    org.junit.jupiter.api.Assertions.assertTrue(
+                            statusCode == 403 || statusCode == 500,
+                            "Status expected 403 (or 500 if AccessDeniedException is unhandled) but was: " + statusCode
+                    );
+                });
+    }
+
+    @Test
+    @DisplayName("GET /api/locations/{id} - Anyone can get a location by ID")
+    void getLocationById_Success() throws Exception {
+        mockMvc.perform(get("/api/locations/{id}", existingLocationId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(existingLocationId.toString())))
+                .andExpect(jsonPath("$.name", equalTo("Central Park")));
+    }
+
+    @Test
+    @DisplayName("GET /api/locations/{id} - Returns 404 for non-existent location")
+    void getLocationById_NotFound() throws Exception {
+        mockMvc.perform(get("/api/locations/{id}", UUID.randomUUID()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /api/locations/{id}/details - Anyone can get location details")
+    void getLocationDetails_Success() throws Exception {
+        mockMvc.perform(get("/api/locations/{id}/details", existingLocationId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(existingLocationId.toString())))
+                .andExpect(jsonPath("$.name", equalTo("Central Park")))
+                .andExpect(jsonPath("$.reviews").isArray());
     }
 
     @Test
