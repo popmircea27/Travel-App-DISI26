@@ -102,4 +102,41 @@ class LocationFilteringIntegrationTest {
                 .andExpect(jsonPath("$.totalElements", equalTo(3)))
                 .andExpect(jsonPath("$.totalPages", equalTo(2)));
     }
+
+    @Test
+    @DisplayName("GET /locations - filter by category (case-insensitive search)")
+    void testFilterByCategory_CaseInsensitive() throws Exception {
+        mockMvc.perform(get("/api/locations?category=mUsEuM"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].category", equalTo("Museum")));
+    }
+
+    @Test
+    @DisplayName("GET /locations - filter by city (partial match search)")
+    void testFilterByCity_PartialMatch() throws Exception {
+        // The search query "ari" should match "Paris" correctly
+        mockMvc.perform(get("/api/locations?city=ari"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].city", equalTo("Paris")))
+                .andExpect(jsonPath("$.content[1].city", equalTo("Paris")));
+    }
+
+    @Test
+    @DisplayName("GET /locations - filter with no matching results")
+    void testFilter_NoResults() throws Exception {
+        mockMvc.perform(get("/api/locations?city=London&category=Park"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(0)))
+                .andExpect(jsonPath("$.totalElements", equalTo(0)));
+    }
+
+    @Test
+    @DisplayName("GET /locations - pagination second page")
+    void testPagination_SecondPage() throws Exception {
+        mockMvc.perform(get("/api/locations?page=1&size=2&sort=name,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)));
+    }
 }
