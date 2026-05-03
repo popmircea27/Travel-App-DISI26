@@ -21,6 +21,10 @@ import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.example.travelappbe.dto.ReviewRequestDto;
 import com.example.travelappbe.dto.ReviewResponseDto;
@@ -326,5 +330,38 @@ class ReviewServiceTest {
         assertEquals(testLocation.getId(), dto.getLocationId());
         assertNotNull(dto.getCreatedAt());
         assertNotNull(dto.getUpdatedAt());
+    }
+
+    @Test
+    @DisplayName("Should retrieve paginated reviews natively for a location")
+    void testGetPaginatedReviewsByLocation_Success() {
+        // Arrange
+        Review review2 = new Review();
+        review2.setId(UUID.randomUUID());
+        review2.setRating(4);
+        review2.setComment("Good!");
+        review2.setLocation(testLocation);
+        review2.setUser(testUser);
+        review2.setCreatedAt(LocalDateTime.now());
+        review2.setUpdatedAt(LocalDateTime.now());
+
+        List<Review> reviews = List.of(testReview, review2);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Review> mockPage = new PageImpl<>(reviews, pageable, reviews.size());
+
+        when(locationRepository.findById(locationId)).thenReturn(Optional.of(testLocation));
+        when(reviewRepository.findByLocation(testLocation, pageable)).thenReturn(mockPage);
+
+        // Act
+        Page<ReviewResponseDto> result = reviewService.getReviewsByLocation(locationId, pageable);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(2, result.getContent().size());
+        assertEquals(5, result.getContent().get(0).getRating());
+        verify(locationRepository, times(1)).findById(locationId);
+        verify(reviewRepository, times(1)).findByLocation(testLocation, pageable);
     }
 }

@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.travelappbe.dto.LocationDetailsResponseDto;
 import com.example.travelappbe.dto.LocationRequestDto;
 import com.example.travelappbe.dto.LocationResponseDto;
-import com.example.travelappbe.dto.ReviewRequestDto;
-import com.example.travelappbe.dto.ReviewResponseDto;
 import com.example.travelappbe.entity.User;
 import com.example.travelappbe.security.JwtTokenProvider;
 import com.example.travelappbe.service.LocationService;
@@ -139,51 +137,6 @@ public class LocationController {
         try {
             locationService.deleteLocation(id);
             return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
-     * Get all reviews for a location.
-     *
-     * @param locationId the location ID
-     * @return ResponseEntity with list of reviews
-     */
-    @GetMapping("/{locationId}/reviews")
-    public ResponseEntity<List<ReviewResponseDto>> getReviews(@PathVariable UUID locationId) {
-        try {
-            List<ReviewResponseDto> reviews = reviewService.getReviewsByLocation(locationId);
-            return ResponseEntity.ok(reviews);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
-     * Add a review to a location.
-     *
-     * @param locationId the location ID
-     * @param reviewRequestDto the review data
-     * @param request the HTTP request containing the JWT token
-     * @return ResponseEntity with the created review
-     */
-    @PostMapping("/{locationId}/reviews")
-    public ResponseEntity<ReviewResponseDto> addReview(@PathVariable UUID locationId,
-                                                       @Valid @RequestBody ReviewRequestDto reviewRequestDto,
-                                                       HttpServletRequest request) {
-        String email = extractEmailFromToken(request);
-        if (email == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        try {
-            User user = userService.getUserByEmail(email);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            ReviewResponseDto review = reviewService.addReview(locationId, user, reviewRequestDto);
-            return new ResponseEntity<>(review, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
