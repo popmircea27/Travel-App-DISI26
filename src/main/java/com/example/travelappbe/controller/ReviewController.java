@@ -6,7 +6,6 @@ import java.util.UUID;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,7 @@ public class ReviewController {
 
     @PostMapping("/{locationId}/reviews")
     public ResponseEntity<ReviewResponseDto> addReview(
-            @PathVariable UUID locationId,
+            @PathVariable("locationId") String locationIdStr,
             HttpServletRequest request,
             @Valid @RequestBody ReviewRequestDto reviewRequestDto) {
 
@@ -52,6 +51,7 @@ public class ReviewController {
         }
 
         try {
+            UUID locationId = parseLocationId(locationIdStr);
             User user = userService.getUserByEmail(email);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -64,14 +64,15 @@ public class ReviewController {
     }
 
     @GetMapping("/{locationId}/reviews")
-    public ResponseEntity<Page<ReviewResponseDto>> getReviews(
-            @PathVariable UUID locationId,
+    public ResponseEntity<List<ReviewResponseDto>> getReviews(
+            @PathVariable("locationId") String locationIdStr,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
+            UUID locationId = parseLocationId(locationIdStr);
             Pageable pageable = PageRequest.of(page, size);
-            Page<ReviewResponseDto> reviewPage = reviewService.getReviewsByLocation(locationId, pageable);
-            return ResponseEntity.ok(reviewPage);
+            List<ReviewResponseDto> reviews = reviewService.getReviewsByLocation(locationId, pageable);
+            return ResponseEntity.ok(reviews);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
@@ -88,5 +89,17 @@ public class ReviewController {
             }
         }
         return null;
+    }
+
+    private UUID parseLocationId(String idStr) {
+        try {
+            return UUID.fromString(idStr);
+        } catch (IllegalArgumentException e) {
+            if (idStr.matches("\\d+")) {
+                String padded = String.format("%012d", Long.parseLong(idStr));
+                return UUID.fromString("c0000000-0000-0000-0000-" + padded);
+            }
+            throw new IllegalArgumentException("Invalid ID format");
+        }
     }
 }

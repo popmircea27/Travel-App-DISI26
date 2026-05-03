@@ -50,15 +50,15 @@ public class ReviewService {
      *
      * @param locationId the location ID
      * @param pageable the pagination information
-     * @return Page of ReviewResponseDto
+     * @return List of ReviewResponseDto
      * @throws IllegalArgumentException if location not found
      */
-    public Page<ReviewResponseDto> getReviewsByLocation(UUID locationId, Pageable pageable) {
+    public List<ReviewResponseDto> getReviewsByLocation(UUID locationId, Pageable pageable) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new IllegalArgumentException("Location not found with id: " + locationId));
 
         Page<Review> reviewPage = reviewRepository.findByLocation(location, pageable);
-        return reviewPage.map(this::convertToResponseDto);
+        return reviewPage.map(this::convertToResponseDto).getContent();
     }
 
     /**
@@ -81,7 +81,6 @@ public class ReviewService {
         review.setLocation(location);
         review.setUser(user);
         review.setCreatedAt(java.time.LocalDateTime.now());
-        review.setUpdatedAt(java.time.LocalDateTime.now());
 
         Review savedReview = reviewRepository.save(review);
         return convertToResponseDto(savedReview);
@@ -98,8 +97,7 @@ public class ReviewService {
                 review.getUser().getId(),
                 review.getUser().getEmail(),
                 review.getLocation().getId(),
-                review.getCreatedAt(),
-                review.getUpdatedAt()
+                review.getCreatedAt()
         );
     }
 }

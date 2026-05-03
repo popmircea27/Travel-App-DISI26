@@ -97,13 +97,12 @@ class LocationControllerIntegrationTest {
         Location location = new Location(
                 "Central Park",
                 "Large public park in NYC",
-                40.785091,
-                -73.968285
+                "Park",
+                0.0,
+                "New York"
         );
-        location.setCountry("USA");
-        location.setCity("New York");
-        location.setCategory("Park");
-        location.setImageUrl("https://example.com/central-park.jpg");
+        location.setAdmin(admin);
+        location.setAudioUrl("https://example.com/central-park.mp3");
         existingLocationId = locationRepository.save(location).getId();
     }
 
@@ -114,12 +113,10 @@ class LocationControllerIntegrationTest {
                 java.util.Map.of(
                         "name", "Statue of Liberty",
                         "description", "Iconic monument",
-                        "latitude", 40.6892,
-                        "longitude", -74.0445,
-                        "country", "USA",
-                        "city", "New York",
                         "category", "Monument",
-                        "imageUrl", "https://example.com/statue.jpg"
+                        "price", 25.5,
+                        "location_name", "New York",
+                        "audio_url", "https://example.com/statue.mp3"
                 )
         );
 
@@ -138,8 +135,10 @@ class LocationControllerIntegrationTest {
         String locationJson = objectMapper.writeValueAsString(
                 java.util.Map.of(
                         "name", "Statue of Liberty",
-                        "latitude", 40.6892,
-                        "longitude", -74.0445
+                        "description", "Iconic monument",
+                        "category", "Monument",
+                        "price", 25.5,
+                        "location_name", "New York"
                 )
         );
 
@@ -162,8 +161,9 @@ class LocationControllerIntegrationTest {
         String updateJson = objectMapper.writeValueAsString(
                 java.util.Map.of(
                         "name", "Central Park Updated",
-                        "latitude", 40.785091,
-                        "longitude", -73.968285
+                        "category", "Park",
+                        "price", 0.0,
+                        "location_name", "New York"
                 )
         );
 
@@ -181,8 +181,9 @@ class LocationControllerIntegrationTest {
         String updateJson = objectMapper.writeValueAsString(
                 java.util.Map.of(
                         "name", "Central Park Updated",
-                        "latitude", 40.785091,
-                        "longitude", -73.968285
+                        "category", "Park",
+                        "price", 0.0,
+                        "location_name", "New York"
                 )
         );
 
@@ -252,7 +253,7 @@ class LocationControllerIntegrationTest {
     void getAllLocations_Success() throws Exception {
         mockMvc.perform(get("/api/locations"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].name", equalTo("Central Park")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].name", equalTo("Central Park")));
     }
 }

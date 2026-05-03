@@ -3,7 +3,6 @@ package com.example.travelappbe.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class LocationRequestDto {
 
@@ -12,30 +11,27 @@ public class LocationRequestDto {
 
     private String description;
 
-    @NotNull(message = "Latitude is required")
-    @JsonProperty("latitude")
-    private Double latitude;
-
-    @NotNull(message = "Longitude is required")
-    @JsonProperty("longitude")
-    private Double longitude;
-
-    private String country;
-
-    private String city;
-
+    @NotBlank(message = "Category is required")
     private String category;
 
-    private String imageUrl;
+    @JsonProperty("audio_url")
+    private String audioUrl;
+
+    private Double price;
+
+    @NotBlank(message = "Location Name is required")
+    @JsonProperty("location_name")
+    private String locationName;
 
     // Constructors
     public LocationRequestDto() {
     }
 
-    public LocationRequestDto(String name, Double latitude, Double longitude) {
+    public LocationRequestDto(String name, String category, Double price, String locationName) {
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.category = category;
+        this.price = price;
+        this.locationName = locationName;
     }
 
     // Getters and Setters
@@ -55,36 +51,12 @@ public class LocationRequestDto {
         this.description = description;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public String getAudioUrl() {
+        return audioUrl;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
     }
 
     public String getCategory() {
@@ -95,11 +67,19 @@ public class LocationRequestDto {
         this.category = category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 }

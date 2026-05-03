@@ -24,15 +24,12 @@ public class ReviewResponseDto {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
-    @JsonProperty("updated_at")
-    private LocalDateTime updatedAt;
-
     // Constructors
     public ReviewResponseDto() {
     }
 
     public ReviewResponseDto(UUID id, Integer rating, String comment, UUID userId, String userEmail,
-                            UUID locationId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                            UUID locationId, LocalDateTime createdAt) {
         this.id = id;
         this.rating = rating;
         this.comment = comment;
@@ -40,7 +37,6 @@ public class ReviewResponseDto {
         this.userEmail = userEmail;
         this.locationId = locationId;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -98,13 +94,5 @@ public class ReviewResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

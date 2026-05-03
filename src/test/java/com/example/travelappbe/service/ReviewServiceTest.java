@@ -75,12 +75,12 @@ class ReviewServiceTest {
         testLocation = new Location(
                 "Eiffel Tower",
                 "Iconic iron tower in Paris",
-                48.8584,
-                2.2945
+                "Monument",
+                20.0,
+                "Paris"
         );
         testLocation.setId(locationId);
-        testLocation.setCountry("France");
-        testLocation.setCity("Paris");
+        testLocation.setAdmin(testUser); // mocked User
 
         // Create test user
         testUser = new User("tourist@example.com", "$2a$10$hashedPassword", UserRole.TOURIST);
@@ -94,7 +94,6 @@ class ReviewServiceTest {
         testReview.setLocation(testLocation);
         testReview.setUser(testUser);
         testReview.setCreatedAt(LocalDateTime.now());
-        testReview.setUpdatedAt(LocalDateTime.now());
 
         // Create review request DTO
         reviewRequestDto = new ReviewRequestDto(5, "Amazing experience!");
@@ -146,7 +145,6 @@ class ReviewServiceTest {
         reviewWithoutComment.setLocation(testLocation);
         reviewWithoutComment.setUser(testUser);
         reviewWithoutComment.setCreatedAt(LocalDateTime.now());
-        reviewWithoutComment.setUpdatedAt(LocalDateTime.now());
 
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(testLocation));
         when(reviewRepository.save(any(Review.class))).thenReturn(reviewWithoutComment);
@@ -174,7 +172,6 @@ class ReviewServiceTest {
         minRatingReview.setLocation(testLocation);
         minRatingReview.setUser(testUser);
         minRatingReview.setCreatedAt(LocalDateTime.now());
-        minRatingReview.setUpdatedAt(LocalDateTime.now());
 
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(testLocation));
         when(reviewRepository.save(any(Review.class))).thenReturn(minRatingReview);
@@ -201,7 +198,6 @@ class ReviewServiceTest {
         maxRatingReview.setLocation(testLocation);
         maxRatingReview.setUser(testUser);
         maxRatingReview.setCreatedAt(LocalDateTime.now());
-        maxRatingReview.setUpdatedAt(LocalDateTime.now());
 
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(testLocation));
         when(reviewRepository.save(any(Review.class))).thenReturn(maxRatingReview);
@@ -265,7 +261,6 @@ class ReviewServiceTest {
         review2.setLocation(testLocation);
         review2.setUser(testUser);
         review2.setCreatedAt(LocalDateTime.now());
-        review2.setUpdatedAt(LocalDateTime.now());
 
         List<Review> reviews = List.of(testReview, review2);
 
@@ -340,7 +335,6 @@ class ReviewServiceTest {
         assertEquals(testUser.getEmail(), dto.getUserEmail());
         assertEquals(testLocation.getId(), dto.getLocationId());
         assertNotNull(dto.getCreatedAt());
-        assertNotNull(dto.getUpdatedAt());
     }
 
     @Test
@@ -354,7 +348,6 @@ class ReviewServiceTest {
         review2.setLocation(testLocation);
         review2.setUser(testUser);
         review2.setCreatedAt(LocalDateTime.now());
-        review2.setUpdatedAt(LocalDateTime.now());
 
         List<Review> reviews = List.of(testReview, review2);
         Pageable pageable = PageRequest.of(0, 10);
@@ -364,14 +357,12 @@ class ReviewServiceTest {
         when(reviewRepository.findByLocation(testLocation, pageable)).thenReturn(mockPage);
 
         // Act
-        Page<ReviewResponseDto> result = reviewService.getReviewsByLocation(locationId, pageable);
+        List<ReviewResponseDto> result = reviewService.getReviewsByLocation(locationId, pageable);
 
         // Assert
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(2, result.getContent().size());
-        assertEquals(5, result.getContent().get(0).getRating());
+        assertEquals(2, result.size());
+        assertEquals(5, result.get(0).getRating());
         verify(locationRepository, times(1)).findById(locationId);
         verify(reviewRepository, times(1)).findByLocation(testLocation, pageable);
     }
