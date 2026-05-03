@@ -18,6 +18,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,6 +54,9 @@ class ReviewServiceTest {
 
     @InjectMocks
     private ReviewService reviewService;
+
+    @Captor
+    private ArgumentCaptor<Review> reviewCaptor;
 
     private UUID locationId;
     private UUID userId;
@@ -120,7 +125,13 @@ class ReviewServiceTest {
         assertNotNull(result.getCreatedAt());
 
         verify(locationRepository, times(1)).findById(locationId);
-        verify(reviewRepository, times(1)).save(any(Review.class));
+        verify(reviewRepository, times(1)).save(reviewCaptor.capture());
+        
+        Review capturedReview = reviewCaptor.getValue();
+        assertEquals(5, capturedReview.getRating());
+        assertEquals("Amazing experience!", capturedReview.getComment());
+        assertEquals(testLocation, capturedReview.getLocation());
+        assertEquals(testUser, capturedReview.getUser());
     }
 
     @Test
