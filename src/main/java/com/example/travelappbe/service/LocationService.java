@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +32,36 @@ public class LocationService {
     }
 
     /**
-     * Retrieves all locations.
+     * Retrieves locations with optional filtering and pagination.
      *
-     * @return List of LocationResponseDto
+     * @param category optional category filter
+     * @param city optional city filter
+     * @param pageable pagination info
+     * @return Page of LocationResponseDto
      */
-    public List<LocationResponseDto> getAllLocations() {
-        return locationRepository.findAll()
-                .stream()
-                .map(this::convertToResponseDto)
-                .collect(Collectors.toList());
+    public Page<LocationResponseDto> getLocations(String category, String city, Pageable pageable) {
+        Location probe = new Location();
+        boolean hasFilters = false;
+        
+        if (category != null && !category.trim().isEmpty()) {
+            probe.setCategory(category.trim());
+            hasFilters = true;
+        }
+        if (city != null && !city.trim().isEmpty()) {
+            probe.setCity(city.trim());
+            hasFilters = true;
+        }
+        
+        if (hasFilters) {
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withIgnoreNullValues()
+                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                    .withIgnoreCase();
+            Example<Location> example = Example.of(probe, matcher);
+            return locationRepository.findAll(example, pageable).map(this::convertToResponseDto);
+        } else {
+            return locationRepository.findAll(pageable).map(this::convertToResponseDto);
+        }
     }
 
     /**
