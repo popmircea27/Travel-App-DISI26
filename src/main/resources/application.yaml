@@ -15,6 +15,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: man.mihai420@gmail.com
+    password: password(to be changed)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 jwt:
   secret: your-secret-key-must-be-at-least-256-bits-long-for-HS256-algorithm-requirement-please-change-in-production
@@ -22,3 +33,7 @@ jwt:
 
 server:
   port: 8080
+
+app:
+  admin:
+    email: man.mihai420@gmail.com
