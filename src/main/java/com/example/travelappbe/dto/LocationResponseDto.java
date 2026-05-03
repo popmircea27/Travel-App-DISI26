@@ -21,6 +21,8 @@ public class LocationResponseDto {
 
     private String city;
 
+    private String category;
+
     private String imageUrl;
 
     @JsonProperty("created_at")
@@ -41,7 +43,7 @@ public class LocationResponseDto {
     }
 
     public LocationResponseDto(UUID id, String name, String description, Double latitude, Double longitude,
-                               String country, String city, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                               String country, String city, String category, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -49,6 +51,7 @@ public class LocationResponseDto {
         this.longitude = longitude;
         this.country = country;
         this.city = city;
+        this.category = category;
         this.imageUrl = imageUrl;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -109,6 +112,14 @@ public class LocationResponseDto {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getImageUrl() {
