@@ -1,8 +1,9 @@
 package com.example.travelappbe.controller;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,12 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.travelappbe.dto.LocationDetailsResponseDto;
 import com.example.travelappbe.dto.LocationRequestDto;
 import com.example.travelappbe.dto.LocationResponseDto;
-import com.example.travelappbe.entity.User;
 import com.example.travelappbe.security.JwtTokenProvider;
 import com.example.travelappbe.service.LocationService;
 import com.example.travelappbe.service.ReviewService;
@@ -50,13 +51,16 @@ public class LocationController {
     }
 
     /**
-     * Get all locations.
+     * Get locations with optional filtering and pagination.
      *
-     * @return ResponseEntity with list of all locations
+     * @param category optional category filter
+     * @param city optional city filter
+     * @param pageable pagination info
+     * @return ResponseEntity with page of locations
      */
     @GetMapping
-    public ResponseEntity<List<LocationResponseDto>> getAllLocations() {
-        List<LocationResponseDto> locations = locationService.getAllLocations();
+    public ResponseEntity<Page<LocationResponseDto>> getLocations(@RequestParam(required = false) String category, @RequestParam(required = false) String city, Pageable pageable) {
+        Page<LocationResponseDto> locations = locationService.getLocations(category, city, pageable);
         return ResponseEntity.ok(locations);
     }
 
