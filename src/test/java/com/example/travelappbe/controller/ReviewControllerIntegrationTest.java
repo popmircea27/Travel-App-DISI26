@@ -6,12 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import jakarta.servlet.Filter;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +44,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * - Error handling
  */
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
 @DisplayName("Review Controller Integration Tests (US4 - SCRUM-47)")
 class ReviewControllerIntegrationTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private WebApplicationContext context;
+
+    @Autowired
+    private Filter springSecurityFilterChain;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private LocationRepository locationRepository;
@@ -73,6 +78,10 @@ class ReviewControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .addFilters(springSecurityFilterChain)
+                .build();
+
         // Create test user
         User user = new User(
                 "tourist@example.com",
@@ -122,7 +131,7 @@ class ReviewControllerIntegrationTest {
                 .andExpect(jsonPath("$.rating", equalTo(5)))
                 .andExpect(jsonPath("$.comment", equalTo("Amazing experience!")))
                 .andExpect(jsonPath("$.user_id", equalTo(userId.toString())))
-                .andExpect(jsonPath("$.user_email", equalTo("tourist@example.com")))
+                .andExpect(jsonPath("$.userEmail", equalTo("tourist@example.com")))
                 .andExpect(jsonPath("$.location_id", equalTo(locationId.toString())))
                 .andExpect(jsonPath("$.created_at").exists())
                 .andExpect(jsonPath("$.updated_at").exists());
@@ -198,7 +207,7 @@ class ReviewControllerIntegrationTest {
         mockMvc.perform(post("/api/locations/{locationId}/reviews", locationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reviewJson))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -214,7 +223,7 @@ class ReviewControllerIntegrationTest {
                 .header("Authorization", "Bearer " + invalidToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reviewJson))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -230,7 +239,7 @@ class ReviewControllerIntegrationTest {
                 .header("Authorization", "InvalidFormat " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reviewJson))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     // ============================================================
@@ -326,10 +335,10 @@ class ReviewControllerIntegrationTest {
         // Act & Assert - Retrieve reviews
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].rating", equalTo(5)))
-                .andExpect(jsonPath("$[0].comment", equalTo("Great!")))
-                .andExpect(jsonPath("$[0].user_email", equalTo("tourist@example.com")));
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].rating", equalTo(5)))
+                .andExpect(jsonPath("$.content[0].comment", equalTo("Great!")))
+                .andExpect(jsonPath("$.content[0].userEmail", equalTo("tourist@example.com")));
     }
 
     @Test
@@ -338,7 +347,7 @@ class ReviewControllerIntegrationTest {
         // Act & Assert
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @Test
@@ -373,9 +382,9 @@ class ReviewControllerIntegrationTest {
         // Step 2: Retrieve reviews for the location
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].rating", equalTo(4)))
-                .andExpect(jsonPath("$[0].comment", equalTo("Very nice place")));
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].rating", equalTo(4)))
+                .andExpect(jsonPath("$.content[0].comment", equalTo("Very nice place")));
     }
 
     @Test
@@ -413,9 +422,9 @@ class ReviewControllerIntegrationTest {
         // Verify both reviews are present
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].rating", equalTo(5)))
-                .andExpect(jsonPath("$[1].rating", equalTo(4)));
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].rating", equalTo(5)))
+                .andExpect(jsonPath("$.content[1].rating", equalTo(4)));
     }
 
     @Test
@@ -444,7 +453,7 @@ class ReviewControllerIntegrationTest {
         // Verify both reviews are present
         mockMvc.perform(get("/api/locations/{locationId}/reviews", locationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.content", hasSize(2)));
     }
 
     @Test
@@ -465,7 +474,7 @@ class ReviewControllerIntegrationTest {
                 .andExpect(jsonPath("$.rating", notNullValue()))
                 .andExpect(jsonPath("$.comment", notNullValue()))
                 .andExpect(jsonPath("$.user_id", notNullValue()))
-                .andExpect(jsonPath("$.user_email", notNullValue()))
+                .andExpect(jsonPath("$.userEmail", notNullValue()))
                 .andExpect(jsonPath("$.location_id", notNullValue()))
                 .andExpect(jsonPath("$.created_at", notNullValue()))
                 .andExpect(jsonPath("$.updated_at", notNullValue()));

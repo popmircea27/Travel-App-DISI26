@@ -1,5 +1,6 @@
 package com.example.travelappbe.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.travelappbe.dto.ReviewRequestDto;
 import com.example.travelappbe.dto.ReviewResponseDto;
 import com.example.travelappbe.entity.Location;
+import com.example.travelappbe.entity.Review;
 import com.example.travelappbe.entity.User;
 import com.example.travelappbe.entity.UserRole;
 import com.example.travelappbe.repository.LocationRepository;
@@ -125,17 +127,15 @@ class AddReviewIntegrationTest {
         ReviewResponseDto result = reviewService.addReview(locationId, testUser, reviewRequestDto);
 
         // Assert
-        assertThat(result)
-                .isNotNull()
-                .extracting("rating", "comment")
-                .containsExactly(expectedRating, expectedComment);
+        assertThat(result).isNotNull();
+        assertThat(result.getRating()).isEqualTo(expectedRating);
+        assertThat(result.getComment()).isEqualTo(expectedComment);
 
         // Verify in database
-        assertThat(reviewRepository.findById(result.getId()))
-                .isPresent()
-                .get()
-                .extracting("rating", "comment")
-                .containsExactly(expectedRating, expectedComment);
+        assertThat(reviewRepository.findById(result.getId())).isPresent();
+        Review dbReview = reviewRepository.findById(result.getId()).get();
+        assertThat(dbReview.getRating()).isEqualTo(expectedRating);
+        assertThat(dbReview.getComment()).isEqualTo(expectedComment);
     }
 
     @Test
@@ -148,16 +148,14 @@ class AddReviewIntegrationTest {
         ReviewResponseDto result = reviewService.addReview(locationId, testUser, reviewRequestDto);
 
         // Assert - DTO contains correct links
-        assertThat(result)
-                .extracting("userId", "locationId")
-                .containsExactly(userId, locationId);
+        assertThat(result.getUserId()).isEqualTo(userId);
+        assertThat(result.getLocationId()).isEqualTo(locationId);
 
         // Verify relationships in database
-        assertThat(reviewRepository.findById(result.getId()))
-                .isPresent()
-                .get()
-                .extracting(review -> review.getUser().getId(), review -> review.getLocation().getId())
-                .containsExactly(userId, locationId);
+        assertThat(reviewRepository.findById(result.getId())).isPresent();
+        Review dbReview = reviewRepository.findById(result.getId()).get();
+        assertThat(dbReview.getUser().getId()).isEqualTo(userId);
+        assertThat(dbReview.getLocation().getId()).isEqualTo(locationId);
     }
 
     @Test
@@ -202,18 +200,18 @@ class AddReviewIntegrationTest {
 
         // Then: Review is saved successfully
         // 1. Response contains review details
-        assertThat(createdReview)
-                .isNotNull()
-                .extracting("rating", "comment", "userId", "locationId")
-                .containsExactly(5, "Fantastic place to visit! The views are breathtaking.", userId, locationId);
+        assertThat(createdReview).isNotNull();
+        assertThat(createdReview.getRating()).isEqualTo(5);
+        assertThat(createdReview.getComment()).isEqualTo("Fantastic place to visit! The views are breathtaking.");
+        assertThat(createdReview.getUserId()).isEqualTo(userId);
+        assertThat(createdReview.getLocationId()).isEqualTo(locationId);
 
         // 2. Review persisted in database
-        Optional<Location> persistedLocation = locationRepository.findById(locationId);
-        assertThat(persistedLocation).isPresent();
-        assertThat(persistedLocation.get().getReviews())
-                .hasSize(1)
-                .extracting("rating", "comment")
-                .containsExactly(5, "Fantastic place to visit! The views are breathtaking.");
+        List<Review> locationReviews = reviewRepository.findByLocation(testLocation);
+        assertThat(locationReviews).hasSize(1);
+        Review persistedReview = locationReviews.get(0);
+        assertThat(persistedReview.getRating()).isEqualTo(5);
+        assertThat(persistedReview.getComment()).isEqualTo("Fantastic place to visit! The views are breathtaking.");
 
         // 3. Review contains timestamps
         assertThat(createdReview.getCreatedAt()).isNotNull();
@@ -275,10 +273,9 @@ class AddReviewIntegrationTest {
         ReviewResponseDto result = reviewService.addReview(locationId, testUser, reviewWithoutComment);
 
         // Assert
-        assertThat(result)
-                .isNotNull()
-                .extracting("rating", "comment")
-                .containsExactly(3, null);
+        assertThat(result).isNotNull();
+        assertThat(result.getRating()).isEqualTo(3);
+        assertThat(result.getComment()).isNull();
 
         // Verify in database
         assertThat(reviewRepository.findById(result.getId()))
