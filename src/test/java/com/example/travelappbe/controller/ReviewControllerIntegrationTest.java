@@ -2,6 +2,9 @@ package com.example.travelappbe.controller;
 
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,11 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import jakarta.servlet.Filter;
 import org.springframework.test.web.servlet.MvcResult;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.example.travelappbe.entity.Location;
 import com.example.travelappbe.entity.User;
@@ -25,13 +31,7 @@ import com.example.travelappbe.repository.UserRepository;
 import com.example.travelappbe.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import jakarta.servlet.Filter;
 
 /**
  * Integration tests for Review endpoints (US4 - SCRUM-47)
@@ -242,6 +242,28 @@ class ReviewControllerIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @DisplayName("POST /locations/{locationId}/reviews - Should return 401 if token is valid but user does not exist")
+    void testAddReview_ValidTokenUserNotFound() throws Exception {
+        // Arrange
+        String tempUserEmail = "temp@example.com";
+        User tempUser = new User(tempUserEmail, passwordEncoder.encode("password"), UserRole.TOURIST);
+        userRepository.save(tempUser);
+        String tokenForDeletedUser = jwtTokenProvider.generateToken(tempUserEmail, "TOURIST");
+        userRepository.delete(tempUser); // User no longer in DB
+
+        String reviewJson = objectMapper.writeValueAsString(
+                java.util.Map.of("rating", 5, "comment", "Review from ghost user")
+        );
+
+        // Act & Assert
+        mockMvc.perform(post("/api/locations/{locationId}/reviews", locationId)
+                .header("Authorization", "Bearer " + tokenForDeletedUser)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(reviewJson))
+                .andExpect(status().isUnauthorized());
+    }
+
     // ============================================================
     // POST /locations/{locationId}/reviews - VALIDATION TESTS
     // ============================================================
@@ -339,6 +361,39 @@ class ReviewControllerIntegrationTest {
                 .andExpect(jsonPath("$.content[0].rating", equalTo(5)))
                 .andExpect(jsonPath("$.content[0].comment", equalTo("Great!")))
                 .andExpect(jsonPath("$.content[0].userEmail", equalTo("tourist@example.com")));
+    }
+
+    @Test
+    @DisplayName("GET /locations/{locationId}/reviews - Should handle pagination correctly")
+    void testGetReviews_Pagination() throws Exception {
+        // Arrange - Add two reviews
+        String review1Json = objectMapper.writeValueAsString(java.util.Map.of("rating", 5, "comment", "First review"));
+        mockMvc.perform(post("/api/locations/{locationId}/reviews", locationId)
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(review1Json))
+                .andExpect(status().isCreated());
+
+        String review2Json = objectMapper.writeValueAsString(java.util.Map.of("rating", 4, "comment", "Second review"));
+        mockMvc.perform(post("/api/locations/{locationId}/reviews", locationId)
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(review2Json))
+                .andExpect(status().isCreated());
+
+        // Act & Assert - Get first page, sorted by creation time
+        mockMvc.perform(get("/api/locations/{locationId}/reviews?page=0&size=1&sort=createdAt,asc", locationId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.totalElements", equalTo(2)))
+                .andExpect(jsonPath("$.totalPages", equalTo(2)))
+                .andExpect(jsonPath("$.content[0].comment", equalTo("First review")));
+
+        // Act & Assert - Get second page
+        mockMvc.perform(get("/api/locations/{locationId}/reviews?page=1&size=1&sort=createdAt,asc", locationId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].comment", equalTo("Second review")));
     }
 
     @Test
