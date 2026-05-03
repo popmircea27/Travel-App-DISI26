@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.travelappbe.dto.LocationDetailsResponseDto;
 import com.example.travelappbe.dto.LocationRequestDto;
 import com.example.travelappbe.dto.LocationResponseDto;
 import com.example.travelappbe.dto.ReviewRequestDto;
@@ -72,6 +73,23 @@ public class LocationController {
         try {
             LocationResponseDto location = locationService.getLocationById(id);
             return ResponseEntity.ok(location);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Get detailed location information including reviews and average rating.
+     * Returns full location details, list of reviews, and calculated average rating.
+     *
+     * @param id the location ID
+     * @return ResponseEntity with LocationDetailsResponseDto containing aggregated data
+     */
+    @GetMapping("/{id}/details")
+    public ResponseEntity<LocationDetailsResponseDto> getLocationDetails(@PathVariable UUID id) {
+        try {
+            LocationDetailsResponseDto details = locationService.getLocationDetails(id);
+            return ResponseEntity.ok(details);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
