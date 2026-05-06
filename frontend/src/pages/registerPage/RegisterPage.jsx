@@ -29,12 +29,7 @@ function RegisterPage() {
         setLoading(true);
         setErrors({});
         try {
-            // Apel real: POST /api/auth/register
-            // Backend primește: { email, password }
-            // Backend returnează: { id, email, role, createdAt }
             await register(email, password);
-
-            // După înregistrare cu succes → redirect la login
             navigate("/login");
         } catch (err) {
             setErrors({ general: err.message || "Înregistrarea a eșuat. Încearcă din nou." });
@@ -46,12 +41,24 @@ function RegisterPage() {
     return (
         <div className="auth-container">
             <div className="auth-card">
+
+                {/* Buton înapoi */}
+                <button
+                    className="auth-back-btn"
+                    onClick={() => navigate("/")}
+                    type="button"
+                    aria-label="Înapoi la pagina principală"
+                >
+                    ← Înapoi
+                </button>
+
                 <h2>Creează cont</h2>
                 <p className="auth-subtitle">Alătură-te comunității noastre</p>
 
                 {errors.general && <span className="error">{errors.general}</span>}
 
-                <form onSubmit={handleSubmit}>
+                {/* autoComplete="off" previne precompletarea de browser */}
+                <form onSubmit={handleSubmit} autoComplete="off">
                     <div className="form-group">
                         <label>Email</label>
                         <input
@@ -59,6 +66,7 @@ function RegisterPage() {
                             placeholder="email@exemplu.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="off"
                         />
                         {errors.email && <span className="error">{errors.email}</span>}
                     </div>
@@ -70,6 +78,7 @@ function RegisterPage() {
                             placeholder="Minim 6 caractere"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
                         />
                         {errors.password && <span className="error">{errors.password}</span>}
                     </div>

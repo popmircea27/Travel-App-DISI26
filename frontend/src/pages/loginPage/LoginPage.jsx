@@ -33,8 +33,7 @@ function LoginPage() {
         try {
             const data = await login(email, password);
             handleLoginSuccess(data.token, { email });
-            // ← Acum merge la dashboard, nu la profile
-            navigate("/dashboard");
+            navigate("/");
         } catch (err) {
             setErrors({ general: err.message || "Email sau parolă greșite." });
         } finally {
@@ -45,6 +44,17 @@ function LoginPage() {
     return (
         <div className="auth-container">
             <div className="auth-card">
+
+                {/* Buton înapoi */}
+                <button
+                    className="auth-back-btn"
+                    onClick={() => navigate("/")}
+                    type="button"
+                    aria-label="Înapoi la pagina principală"
+                >
+                    ← Înapoi
+                </button>
+
                 <h2>Bine ai revenit!</h2>
                 <p className="auth-subtitle">Loghează-te în contul tău</p>
 

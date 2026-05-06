@@ -230,3 +230,39 @@
     0% { background-position: 100% 0; }
     100% { background-position: 0 0; }
 }
+
+/* ── Login prompt (vizibil doar nelogat, în secțiunea review) ── */
+.ld-login-prompt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(67, 160, 71, 0.07);
+    border: 1px solid rgba(67, 160, 71, 0.25);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.ld-login-prompt__icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.ld-login-prompt__link {
+    color: #2e7d32;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ld-login-prompt__link:hover {
+    text-decoration: underline;
+}
+
+/* ── Mesaj fără review-uri ── */
+.ld-no-reviews {
+    color: var(--text);
+    font-size: 0.9rem;
+    margin-top: 12px;
+}

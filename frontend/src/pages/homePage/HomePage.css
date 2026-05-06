@@ -20,22 +20,42 @@
     max-width: 560px;
 }
 
-.home-hero-icon {
-    font-size: 56px;
+.home-hero__icon {
+    font-size: 52px;
     line-height: 1;
     margin-bottom: 4px;
+    animation: wave 1.8s ease-in-out 1;
+    transform-origin: 70% 70%;
+    display: inline-block;
 }
 
-.home-title {
-    font-size: 2.4rem;
-    font-weight: 600;
-    color: var(--text-h);
-    margin: 0;
-    line-height: 1.15;
-    letter-spacing: -0.5px;
+@keyframes wave {
+    0%   { transform: rotate(0deg); }
+    15%  { transform: rotate(14deg); }
+    30%  { transform: rotate(-8deg); }
+    45%  { transform: rotate(14deg); }
+    60%  { transform: rotate(-4deg); }
+    75%  { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
 }
 
-.home-subtitle {
+.home-hero__title {
+    font-size: 2.4rem !important;
+    font-weight: 600 !important;
+    color: var(--text-h) !important;
+    margin: 0 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.5px !important;
+}
+
+.home-hero__name {
+    background: linear-gradient(135deg, #43a047, #1565c0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.home-hero__subtitle {
     font-size: 1rem;
     color: var(--text);
     line-height: 1.6;
@@ -43,7 +63,7 @@
     margin: 0;
 }
 
-/* ── CTA buttons ── */
+/* ── CTA buttons (guest) ── */
 .home-cta-group {
     display: flex;
     gap: 12px;
@@ -78,7 +98,56 @@
     color: #2e7d32;
 }
 
-/* ── Feature cards ── */
+/* ── Carduri logat (acces rapid) ── */
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 680px;
+}
+
+.home-card {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s;
+}
+
+.home-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+    border-color: #43a047;
+}
+
+.home-card__icon {
+    font-size: 30px;
+    line-height: 1;
+}
+
+.home-card h2 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--text-h) !important;
+    margin: 0 !important;
+}
+
+.home-card p {
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ── Feature cards (guest) ── */
 .home-features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -111,10 +180,10 @@
 }
 
 .home-feature-card h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-h);
-    margin: 0;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--text-h) !important;
+    margin: 0 !important;
 }
 
 .home-feature-card p {
@@ -124,7 +193,7 @@
     margin: 0;
 }
 
-/* ── Banner ── */
+/* ── Banner guest ── */
 .home-banner {
     background: rgba(67, 160, 71, 0.08);
     border: 1px solid rgba(67, 160, 71, 0.30);
@@ -148,7 +217,8 @@
 
 /* ── Responsive ── */
 @media (max-width: 480px) {
-    .home-title { font-size: 1.9rem; }
-    .home-hero-icon { font-size: 44px; }
-    .home-features { grid-template-columns: 1fr; }
+    .home-hero__title { font-size: 1.9rem !important; }
+    .home-hero__icon  { font-size: 44px; }
+    .home-features,
+    .home-cards       { grid-template-columns: 1fr; }
 }
