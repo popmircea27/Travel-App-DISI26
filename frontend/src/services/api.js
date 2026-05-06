@@ -227,7 +227,30 @@ export async function uploadLocationImage(locationId, file) {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
-            // Nu pune Content-Type – browserul setează boundary-ul corect
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        let errorMessage = `Upload failed: ${response.status}`;
+        try {
+            const data = await response.json();
+            errorMessage = data.message || errorMessage;
+        } catch {}
+        throw new Error(errorMessage);
+    }
+    return response.json();
+}                          // ← acolada de închidere a uploadLocationImage
+
+export async function uploadLocationAudio(locationId, file) {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("audio", file);
+
+    const response = await fetch(`${BASE_URL}/locations/${locationId}/audio`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
         body: formData,
     });
