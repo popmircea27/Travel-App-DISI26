@@ -1,23 +1,30 @@
 // src/App.jsx
+//
+// Structura rutelor:
+//
+//  /            → HomePage (unificată: guest view SAU dashboard view)
+//  /login       → LoginPage       (publică, fără navbar propriu)
+//  /register    → RegisterPage    (publică, fără navbar propriu)
+//  /locations   → LocationsPage   (publică – vizibilă și nelogat)
+//  /locations/:id → LocationDetailsPage (publică)
+//  /profile     → ProfilePage     (privată – necesită login)
+//  /contact     → ContactPage     (privată – necesită login)
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
-// Pagini publice
-import HomePage     from "./pages/homePage/HomePage.jsx";
-import LoginPage    from "./pages/loginPage/LoginPage.jsx";
-import RegisterPage from "./pages/registerPage/RegisterPage.jsx";
-
-// Pagini private
-import DashboardPage from "./pages/dashboardPage/DashboardPage.jsx";
-import ProfilePage   from "./pages/profilePage/ProfilePage.jsx";
-import LocationsPage from "./pages/locationsPage/LocationsPage.jsx";
-import LocationDetailsPage from "./pages/locationDetailsPage/LocationDetailsPage.jsx";
-import ContactPage   from "./pages/contactPage/ContactPage.jsx";
-
-// Layout / protecție
-import PrivateRoute from "./components/PrivateRoute.jsx";
+// Layout cu navbar adaptiv
 import AppLayout    from "./components/AppLayout.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+
+// Pagini
+import HomePage           from "./pages/homePage/HomePage.jsx";
+import LoginPage          from "./pages/loginPage/LoginPage.jsx";
+import RegisterPage       from "./pages/registerPage/RegisterPage.jsx";
+import LocationsPage      from "./pages/locationsPage/LocationsPage.jsx";
+import LocationDetailsPage from "./pages/locationDetailsPage/LocationDetailsPage.jsx";
+import ProfilePage        from "./pages/profilePage/ProfilePage.jsx";
+import ContactPage        from "./pages/contactPage/ContactPage.jsx";
 
 function App() {
     return (
@@ -25,27 +32,39 @@ function App() {
             <BrowserRouter>
                 <Routes>
 
-                    {/* ── Rute PUBLICE ── */}
-                    <Route path="/"         element={<HomePage />} />
+                    {/* ── Rute cu navbar (AppLayout) ── */}
+
+                    {/* Pagina principală – publică, conținut diferit după auth */}
+                    <Route path="/" element={
+                        <AppLayout><HomePage /></AppLayout>
+                    } />
+
+                    {/* Locații – publică (poate fi văzută și nelogat) */}
+                    <Route path="/locations" element={
+                        <AppLayout><LocationsPage /></AppLayout>
+                    } />
+                    <Route path="/locations/:id" element={
+                        <AppLayout><LocationDetailsPage /></AppLayout>
+                    } />
+
+                    {/* Rute private – necesită login */}
+                    <Route path="/profile" element={
+                        <PrivateRoute>
+                            <AppLayout><ProfilePage /></AppLayout>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/contact" element={
+                        <PrivateRoute>
+                            <AppLayout><ContactPage /></AppLayout>
+                        </PrivateRoute>
+                    } />
+
+                    {/* ── Rute fără navbar (pagini standalone) ── */}
                     <Route path="/login"    element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
 
-                    {/* ── Rute PRIVATE ── */}
-                    <Route path="/dashboard" element={
-                        <PrivateRoute><AppLayout><DashboardPage /></AppLayout></PrivateRoute>
-                    } />
-                    <Route path="/profile" element={
-                        <PrivateRoute><AppLayout><ProfilePage /></AppLayout></PrivateRoute>
-                    } />
-                    <Route path="/locations" element={
-                        <PrivateRoute><AppLayout><LocationsPage /></AppLayout></PrivateRoute>
-                    } />
-                    <Route path="/locations/:id" element={
-                        <PrivateRoute><AppLayout><LocationDetailsPage /></AppLayout></PrivateRoute>
-                    } />
-                    <Route path="/contact" element={
-                        <PrivateRoute><AppLayout><ContactPage /></AppLayout></PrivateRoute>
-                    } />
+                    {/* /dashboard redirecționează la / ca să nu se rupă linkuri vechi */}
+                    <Route path="/dashboard" element={<Navigate to="/" replace />} />
 
                 </Routes>
             </BrowserRouter>

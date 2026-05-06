@@ -29,13 +29,14 @@
     font-weight: 700;
     color: var(--text-h);
     text-decoration: none;
+    flex-shrink: 0;
 }
 
 .app-navbar__brand-icon {
     font-size: 1.4rem;
 }
 
-/* ── Nav links ── */
+/* ── Links group ── */
 .app-navbar__links {
     display: flex;
     align-items: center;
@@ -57,6 +58,7 @@
     background: transparent;
     cursor: pointer;
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .app-navbar__link:hover {
@@ -70,7 +72,25 @@
     font-weight: 600;
 }
 
-/* Logout */
+/* Buton Register – mai evidențiat */
+.app-navbar__register {
+    background: linear-gradient(135deg, #43a047, #1565c0);
+    color: #fff !important;
+    margin-left: 4px;
+}
+
+.app-navbar__register:hover {
+    opacity: 0.88;
+    background: linear-gradient(135deg, #43a047, #1565c0) !important;
+    color: #fff !important;
+}
+
+.app-navbar__register.active {
+    background: linear-gradient(135deg, #43a047, #1565c0) !important;
+    color: #fff !important;
+}
+
+/* Buton Logout */
 .app-navbar__logout {
     color: var(--text);
     border: 1px solid var(--border);
@@ -78,9 +98,9 @@
 }
 
 .app-navbar__logout:hover {
-    background: #fff0f0;
+    background: #fff0f0 !important;
     border-color: #e53935;
-    color: #e53935;
+    color: #e53935 !important;
 }
 
 /* ── Content ── */
@@ -91,9 +111,24 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 520px) {
-    .app-navbar { padding: 0 16px; }
-    .app-navbar__brand span { display: none; }
-    .app-navbar__link span { display: none; }
-    .app-navbar__link { padding: 8px; }
+@media (max-width: 600px) {
+    .app-navbar {
+        padding: 0 16px;
+    }
+
+    .app-navbar__brand span:last-child {
+        display: none;
+    }
+
+    .app-navbar__link span:first-child {
+        /* păstrăm iconița */
+    }
+
+    .app-navbar__link span:last-child {
+        display: none;
+    }
+
+    .app-navbar__link {
+        padding: 8px 10px;
+    }
 }
