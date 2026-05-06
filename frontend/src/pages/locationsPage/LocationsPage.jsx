@@ -1,8 +1,4 @@
 // src/pages/locationsPage/LocationsPage.jsx
-//
-// Filtrare client-side pe datele încărcate de la GET /api/locations.
-// Când backend-ul adaugă suport pentru query params, înlocuiești
-// doar apelul din fetchLocations() – UI-ul rămâne neschimbat.
 
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -122,9 +118,24 @@ function ErrorState({ message, onRetry }) {
     );
 }
 
-// ─── Bara de filtre ────────────────────────────────────────────
-function FilterBar({ search, onSearch, country, onCountry, city, onCity,
-                       sortBy, onSort, countries, cities, onReset, activeCount }) {
+// ─── Bara de filtre (MODIFICATĂ – include categoria) ──────────
+function FilterBar({
+                       search,
+                       onSearch,
+                       country,
+                       onCountry,
+                       city,
+                       onCity,
+                       category,        // nou
+                       onCategory,      // nou
+                       sortBy,
+                       onSort,
+                       countries,
+                       cities,
+                       categories,      // nou
+                       onReset,
+                       activeCount,
+                   }) {
     return (
         <div className="loc-filterbar">
             {/* Search */}
@@ -154,12 +165,17 @@ function FilterBar({ search, onSearch, country, onCountry, city, onCity,
             <select
                 className="loc-filter-select"
                 value={country}
-                onChange={(e) => { onCountry(e.target.value); onCity(""); }}
+                onChange={(e) => {
+                    onCountry(e.target.value);
+                    onCity(""); // resetează orașul când se schimbă țara
+                }}
                 aria-label="Filtrează după țară"
             >
                 <option value="">Toate țările</option>
                 {countries.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>
+                        {c}
+                    </option>
                 ))}
             </select>
 
@@ -173,7 +189,24 @@ function FilterBar({ search, onSearch, country, onCountry, city, onCity,
             >
                 <option value="">Toate orașele</option>
                 {cities.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>
+                        {c}
+                    </option>
+                ))}
+            </select>
+
+            {/* 🆕 Category select */}
+            <select
+                className="loc-filter-select"
+                value={category}
+                onChange={(e) => onCategory(e.target.value)}
+                aria-label="Filtrează după categorie"
+            >
+                <option value="">Toate categoriile</option>
+                {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                        {cat}
+                    </option>
                 ))}
             </select>
 
@@ -211,24 +244,30 @@ export default function LocationsPage() {
 
     // ── Date brute de la API
     const [locations, setLocations] = useState([]);
-    const [loading, setLoading]     = useState(true);
-    const [error, setError]         = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // ── State filtre
-    const [search,  setSearch]  = useState("");
+    // ── State filtre (adaugat category)
+    const [search, setSearch] = useState("");
     const [country, setCountry] = useState("");
-    const [city,    setCity]    = useState("");
-    const [sortBy,  setSortBy]  = useState("default");
+    const [city, setCity] = useState("");
+    const [category, setCategory] = useState(""); // 🆕
+    const [sortBy, setSortBy] = useState("default");
 
-    // ── Fetch
+    // ── Fetch (obține toate locațiile – filtrarea e pe client)
     const fetchLocations = async () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getLocations({ search, country, city, sortBy });
+            // Apelează fără parametri; backend-ul trebuie să returneze toate locațiile
+            // inclusiv câmpul "category" (string).
+            const data = await getLocations();
             setLocations(Array.isArray(data) ? data : []);
         } catch (err) {
-            if (err.message.includes("401") || err.message.toLowerCase().includes("unauthorized")) {
+            if (
+                err.message.includes("401") ||
+                err.message.toLowerCase().includes("unauthorized")
+            ) {
                 handleLogout();
                 navigate("/login");
             } else {
@@ -238,40 +277,10 @@ export default function LocationsPage() {
             setLoading(false);
         }
     };
-    /*const fetchLocations = async () => {
-        setLoading(true);
-        setError(null);
 
-        try {
-            // 🔥 DATE FAKE (mock)
-            const data = [
-                {
-                    id: 1,
-                    name: "Castelul Bran",
-                    city: "Brașov",
-                    country: "România",
-                    description: "Unul dintre cele mai cunoscute castele din România.",
-                    imageUrl: ""
-                },
-                {
-                    id: 2,
-                    name: "Salina Turda",
-                    city: "Turda",
-                    country: "România",
-                    description: "O salină spectaculoasă transformată în atracție turistică.",
-                    imageUrl: ""
-                }
-            ];
-
-            setLocations(data);
-        } catch (err) {
-            setError("Eroare la încărcare");
-        } finally {
-            setLoading(false);
-        }
-    };*/
-
-    useEffect(() => { fetchLocations(); }, []);
+    useEffect(() => {
+        fetchLocations();
+    }, []);
 
     // ── Liste unice pentru selecturi (derivate din date)
     const countries = useMemo(() => {
@@ -288,7 +297,13 @@ export default function LocationsPage() {
         return [...set].sort();
     }, [locations, country]);
 
-    // ── Filtrare + sortare client-side
+    // 🆕 Lista unică de categorii
+    const categories = useMemo(() => {
+        const set = new Set(locations.map((l) => l.category).filter(Boolean));
+        return [...set].sort();
+    }, [locations]);
+
+    // ── Filtrare + sortare client-side (include categoria) ────
     const filtered = useMemo(() => {
         let result = [...locations];
 
@@ -308,27 +323,33 @@ export default function LocationsPage() {
         // city
         if (city) result = result.filter((l) => l.city === city);
 
+        // 🆕 category
+        if (category) result = result.filter((l) => l.category === category);
+
         // sort
         if (sortBy === "name_asc")
             result.sort((a, b) => a.name?.localeCompare(b.name));
         else if (sortBy === "name_desc")
             result.sort((a, b) => b.name?.localeCompare(a.name));
         else if (sortBy === "newest")
-            result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            result.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
 
         return result;
-    }, [locations, search, country, city, sortBy]);
+    }, [locations, search, country, city, category, sortBy]); // 🆕 dependency
 
     // ── Reset toate filtrele
     const resetFilters = () => {
         setSearch("");
         setCountry("");
         setCity("");
+        setCategory(""); // 🆕
         setSortBy("default");
     };
 
-    // Câte filtre active (fără sort)
-    const activeFilterCount = [search, country, city].filter(Boolean).length;
+    // Câte filtre active (include și categoria)
+    const activeFilterCount = [search, country, city, category].filter(Boolean).length;
     const hasFilters = activeFilterCount > 0;
     const openLocationDetails = (id) => navigate(`/locations/${id}`);
 
@@ -337,18 +358,27 @@ export default function LocationsPage() {
             {/* ── Header ── */}
             <div className="loc-header">
                 <h1 className="loc-title">Locații turistice</h1>
-                <p className="loc-subtitle">Explorează destinații din toată România</p>
+                <p className="loc-subtitle">
+                    Explorează destinații din toată România
+                </p>
             </div>
 
             {/* ── Filtre – vizibile doar când datele sunt încărcate ── */}
             {!loading && !error && (
                 <FilterBar
-                    search={search}     onSearch={setSearch}
-                    country={country}   onCountry={setCountry}
-                    city={city}         onCity={setCity}
-                    sortBy={sortBy}     onSort={setSortBy}
+                    search={search}
+                    onSearch={setSearch}
+                    country={country}
+                    onCountry={setCountry}
+                    city={city}
+                    onCity={setCity}
+                    category={category} // 🆕
+                    onCategory={setCategory} // 🆕
+                    sortBy={sortBy}
+                    onSort={setSortBy}
                     countries={countries}
                     cities={cities}
+                    categories={categories} // 🆕
                     onReset={resetFilters}
                     activeCount={activeFilterCount}
                 />
@@ -359,7 +389,9 @@ export default function LocationsPage() {
                 <p className="loc-count">
                     {hasFilters
                         ? `${filtered.length} din ${locations.length} locații`
-                        : `${locations.length} ${locations.length === 1 ? "locație" : "locații"} disponibile`}
+                        : `${locations.length} ${
+                            locations.length === 1 ? "locație" : "locații"
+                        } disponibile`}
                 </p>
             )}
 
@@ -377,7 +409,11 @@ export default function LocationsPage() {
             {!loading && !error && filtered.length > 0 && (
                 <div className="loc-grid">
                     {filtered.map((loc) => (
-                        <LocationCard key={loc.id} location={loc} onOpen={openLocationDetails} />
+                        <LocationCard
+                            key={loc.id}
+                            location={loc}
+                            onOpen={openLocationDetails}
+                        />
                     ))}
                 </div>
             )}
