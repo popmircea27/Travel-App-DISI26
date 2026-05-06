@@ -214,6 +214,16 @@ export default function LocationDetailsPage() {
                     <div className="ld-media__placeholder" aria-hidden="true">📍</div>
                 )}
             </div>
+            {(location.audioUrl || location.audio_url) && (
+                <section className="ld-audio">
+                    <h2>🎧 Audio ghid</h2>
+                    <p className="ld-audio__desc">Ascultă ghidul audio pentru această locație.</p>
+                    <audio className="ld-audio__player" controls>
+                        <source src={location.audioUrl || location.audio_url} type="audio/mpeg" />
+                        Browser-ul tău nu suportă redarea audio.
+                    </audio>
+                </section>
+            )}
 
             <section className="ld-card">
                 <h1>{location.name}</h1>
