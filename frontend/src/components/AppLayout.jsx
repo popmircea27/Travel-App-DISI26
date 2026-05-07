@@ -1,7 +1,7 @@
 // src/components/AppLayout.jsx
 // Navbar vizibil întotdeauna.
 // Nelogat  → logo + Locații, Login, Register
-// Logat    → logo + Dashboard, Locații, Contact, Profil, Logout
+// Logat    → logo + Dashboard, Locații, AI Itinerary, Contact, Profil, Logout
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -45,6 +45,14 @@ export default function AppLayout({ children }) {
                             >
                                 <span>📍</span>
                                 <span>Locații</span>
+                            </NavLink>
+
+                            <NavLink
+                                to="/ai-itinerary"
+                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
+                            >
+                                <span>🤖</span>
+                                <span>AI Itinerary</span>
                             </NavLink>
 
                             <NavLink
