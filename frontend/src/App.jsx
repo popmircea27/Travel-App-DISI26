@@ -9,6 +9,7 @@
 //  /locations/:id → LocationDetailsPage (publică)
 //  /profile     → ProfilePage     (privată – necesită login)
 //  /contact     → ContactPage     (privată – necesită login)
+//  /ai-itinerary → AIItineraryPage (privată – necesită login)
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -25,6 +26,7 @@ import LocationsPage      from "./pages/locationsPage/LocationsPage.jsx";
 import LocationDetailsPage from "./pages/locationDetailsPage/LocationDetailsPage.jsx";
 import ProfilePage        from "./pages/profilePage/ProfilePage.jsx";
 import ContactPage        from "./pages/contactPage/ContactPage.jsx";
+import AIItineraryPage    from "./pages/aiItineraryPage/AIItineraryPage.jsx";
 
 function App() {
     return (
@@ -56,6 +58,11 @@ function App() {
                     <Route path="/contact" element={
                         <PrivateRoute>
                             <AppLayout><ContactPage /></AppLayout>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/ai-itinerary" element={
+                        <PrivateRoute>
+                            <AppLayout><AIItineraryPage /></AppLayout>
                         </PrivateRoute>
                     } />
 

@@ -5,7 +5,7 @@
 // Când backend-ul e gata, schimbi doar BASE_URL și endpoint-urile.
 // ============================================================
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 // ─── Helper intern ────────────────────────────────────────────
 /**
@@ -264,4 +264,55 @@ export async function uploadLocationAudio(locationId, file) {
         throw new Error(errorMessage);
     }
     return response.json();
+}
+
+// ─── AI ITINERARY PLANNER ─────────────────────────────────────
+
+// ─── AI ITINERARY PLANNER ─────────────────────────────────────
+
+/**
+ * Generates a travel itinerary or sends a follow-up message.
+ *
+ * FIRST REQUEST (no sessionId provided):
+ *   Sends: { city, location, days, preferences, message }
+ *   Returns: { sessionId, answer }
+ *
+ * FOLLOW-UP REQUEST (with sessionId):
+ *   Sends: { sessionId, message }
+ *   Returns: { sessionId, answer }
+ *
+ * @param {object} data
+ * @param {string} data.message - User's request or follow-up message
+ * @param {string} [data.sessionId] - Session ID (only for follow-ups)
+ * @param {string} [data.city] - City (only for first request)
+ * @param {string} [data.location] - Location (only for first request)
+ * @param {number} [data.days] - Number of days (only for first request)
+ * @param {string[]} [data.preferences] - Preferences (only for first request)
+ * @returns {Promise<{sessionId: string, answer: string}>}
+ */
+export async function generateItinerary(data) {
+    // Build request body based on whether this is first request or follow-up
+    let body;
+
+    if (data.sessionId) {
+        // Follow-up request: only send sessionId and message
+        body = {
+            sessionId: data.sessionId,
+            message: data.message,
+        };
+    } else {
+        // First request: send all form data
+        body = {
+            city: data.city,
+            location: data.location,
+            days: data.days,
+            preferences: data.preferences || [],
+            message: data.message,
+        };
+    }
+
+    return request("/ai/itinerary", {
+        method: "POST",
+        body: JSON.stringify(body),
+    });
 }
