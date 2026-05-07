@@ -1,12 +1,26 @@
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
+from starlette.middleware.cors import CORSMiddleware
 
 from app.schemas import ItineraryRequest
 from app.backend_client import get_locations_for_city
 from app.ollama_client import ask_ollama
 
 app = FastAPI(title="AI Itinerary Planner")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 sessions: dict[str, dict] = {}
 
