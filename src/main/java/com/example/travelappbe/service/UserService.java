@@ -19,6 +19,7 @@ import com.example.travelappbe.exception.InvalidCredentialsException;
 import com.example.travelappbe.exception.UserAlreadyExistsException;
 import com.example.travelappbe.repository.UserRepository;
 import com.example.travelappbe.security.JwtTokenProvider;
+import com.example.travelappbe.service.UserProfileSyncService;
 
 @Service
 public class UserService {
@@ -26,11 +27,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserProfileSyncService userProfileSyncService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserProfileSyncService userProfileSyncService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userProfileSyncService = userProfileSyncService;
     }
 
     /**
@@ -61,10 +64,13 @@ public class UserService {
 
         // Save user to database
         User savedUser = userRepository.save(user);
-        
+
         // Ensure the entity is fully persisted and auto-generated fields are available
         // by flushing the persistence context to the database
         userRepository.flush();
+
+        // Create or sync MongoDB profile for the newly created user
+        userProfileSyncService.createProfileForUser(savedUser);
 
         // Return response DTO
         return new RegisterResponseDto(

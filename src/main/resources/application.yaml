@@ -8,6 +8,13 @@ spring:
     password: 1234
     driver-class-name: org.postgresql.Driver
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/travelapp_geo
+      database: travelapp_geo
+      username: travelapp_user
+      password: travelapp_password
+      authentication-database: travelapp_geo
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,11 +22,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   mail:
     host: smtp.gmail.com
     port: 587
     username: man.mihai420@gmail.com
-    password: password(to be changed)
+    password: "password(to be changed)"
     properties:
       mail:
         smtp:
