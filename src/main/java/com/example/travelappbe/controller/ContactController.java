@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.example.travelappbe.dto.ContactRequestDto;
 import com.example.travelappbe.security.JwtTokenProvider;
@@ -18,6 +19,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/contact")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class ContactController {
 
     private final EmailService emailService;
