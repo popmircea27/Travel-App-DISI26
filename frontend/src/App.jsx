@@ -27,7 +27,7 @@ import LocationDetailsPage from "./pages/locationDetailsPage/LocationDetailsPage
 import ProfilePage        from "./pages/profilePage/ProfilePage.jsx";
 import ContactPage        from "./pages/contactPage/ContactPage.jsx";
 import AIItineraryPage    from "./pages/aiItineraryPage/AIItineraryPage.jsx";
-
+import NearbyPage from "./pages/nearbyPage/NearbyPage.jsx";
 function App() {
     return (
         <AuthProvider>
@@ -55,6 +55,7 @@ function App() {
                             <AppLayout><ProfilePage /></AppLayout>
                         </PrivateRoute>
                     } />
+
                     <Route path="/contact" element={
                         <PrivateRoute>
                             <AppLayout><ContactPage /></AppLayout>
@@ -63,6 +64,11 @@ function App() {
                     <Route path="/ai-itinerary" element={
                         <PrivateRoute>
                             <AppLayout><AIItineraryPage /></AppLayout>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/nearby" element={
+                        <PrivateRoute>
+                            <AppLayout><NearbyPage /></AppLayout>
                         </PrivateRoute>
                     } />
 

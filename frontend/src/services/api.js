@@ -5,7 +5,7 @@
 // Când backend-ul e gata, schimbi doar BASE_URL și endpoint-urile.
 // ============================================================
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 // ─── Helper intern ────────────────────────────────────────────
 /**
