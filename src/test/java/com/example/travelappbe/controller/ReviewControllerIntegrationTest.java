@@ -101,7 +101,9 @@ class ReviewControllerIntegrationTest {
                 "The iconic iron lattice tower built in 1889 for the World's Fair",
                 "Monument",
                 20.0,
-                "Paris"
+                "Paris",
+                48.8584,
+                2.2945
         );
         location.setAdmin(savedUser); // use any valid user
         Location savedLocation = locationRepository.save(location);

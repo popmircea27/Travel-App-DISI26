@@ -65,7 +65,9 @@ class LocationServiceTest {
                 "Large public park in NYC",
                 "Park",
                 0.0,
-                "New York"
+                "New York",
+                40.7851,
+                -73.9683
         );
         testLocation.setId(locationId);
         testLocation.setAudioUrl("https://example.com/park.mp3");

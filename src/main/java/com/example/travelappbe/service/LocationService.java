@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +15,8 @@ import com.example.travelappbe.dto.LocationRequestDto;
 import com.example.travelappbe.dto.LocationResponseDto;
 import com.example.travelappbe.dto.ReviewResponseDto;
 import com.example.travelappbe.entity.Location;
-import com.example.travelappbe.entity.User;
 import com.example.travelappbe.entity.Review;
+import com.example.travelappbe.entity.User;
 import com.example.travelappbe.repository.LocationRepository;
 import com.example.travelappbe.repository.ReviewRepository;
 
@@ -116,6 +115,8 @@ public class LocationService {
                 location.getCategory(),
                 location.getPrice(),
                 location.getLocationName(),
+                location.getLatitude(),
+                location.getLongitude(),
                 location.getAdmin().getId(),
                 averageRating,
                 reviews.size(),
@@ -140,6 +141,8 @@ public class LocationService {
         location.setAudioUrl(locationRequestDto.getAudioUrl());
         location.setPrice(locationRequestDto.getPrice() != null ? locationRequestDto.getPrice() : 0.0);
         location.setLocationName(locationRequestDto.getLocationName());
+        location.setLatitude(locationRequestDto.getLatitude());
+        location.setLongitude(locationRequestDto.getLongitude());
         location.setAdmin(admin);
 
         Location savedLocation = locationRepository.save(location);
@@ -177,6 +180,12 @@ public class LocationService {
         if (locationRequestDto.getLocationName() != null) {
             location.setLocationName(locationRequestDto.getLocationName());
         }
+        if (locationRequestDto.getLatitude() != null) {
+            location.setLatitude(locationRequestDto.getLatitude());
+        }
+        if (locationRequestDto.getLongitude() != null) {
+            location.setLongitude(locationRequestDto.getLongitude());
+        }
 
         Location updatedLocation = locationRepository.save(location);
         return convertToResponseDto(updatedLocation);
@@ -207,6 +216,8 @@ public class LocationService {
                 location.getCategory(),
                 location.getPrice(),
                 location.getLocationName(),
+                location.getLatitude(),
+                location.getLongitude(),
                 location.getAdmin().getId(),
                 location.getCreatedAt()
         );
