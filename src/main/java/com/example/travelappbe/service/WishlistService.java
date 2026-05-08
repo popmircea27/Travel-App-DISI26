@@ -98,7 +98,6 @@ public class WishlistService {
      */
     private WishlistResponseDto convertToDto(Wishlist wishlist) {
         return new WishlistResponseDto(
-                wishlist.getId(),
                 wishlist.getUser().getId(),
                 wishlist.getUser().getEmail(),
                 wishlist.getLocation().getId(),
@@ -107,8 +106,7 @@ public class WishlistService {
                 wishlist.getLocation().getCategory(),
                 wishlist.getLocation().getPrice(),
                 wishlist.getLocation().getLocationName(),
-                wishlist.getCreatedAt(),
-                wishlist.getUpdatedAt()
+                wishlist.getCreatedAt()
         );
     }
 }

@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WishlistResponseDto {
 
-    private UUID id;
-
     @JsonProperty("user_id")
     private UUID userId;
 
@@ -31,17 +29,13 @@ public class WishlistResponseDto {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
-    @JsonProperty("updated_at") 
-    private LocalDateTime updatedAt;
-
     // Constructors
     public WishlistResponseDto() {
     }
 
-    public WishlistResponseDto(UUID id, UUID userId, String userEmail, UUID locationId,
+    public WishlistResponseDto(UUID userId, String userEmail, UUID locationId,
                              String locationName, String description, String category,
-                             Double price, String locName, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+                             Double price, String locName, LocalDateTime createdAt) {
         this.userId = userId;
         this.userEmail = userEmail;
         this.locationId = locationId;
@@ -51,18 +45,9 @@ public class WishlistResponseDto {
         this.price = price;
         this.locName = locName;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public UUID getUserId() {
         return userId;
     }
@@ -133,13 +118,5 @@ public class WishlistResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

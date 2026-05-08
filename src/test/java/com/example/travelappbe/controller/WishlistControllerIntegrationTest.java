@@ -137,7 +137,6 @@ class WishlistControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.user_id", equalTo(userId.toString())))
                 .andExpect(jsonPath("$.location_id", equalTo(locationId1.toString())))
                 .andExpect(jsonPath("$.locationName", equalTo("Eiffel Tower")));

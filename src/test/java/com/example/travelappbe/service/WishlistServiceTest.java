@@ -72,7 +72,6 @@ class WishlistServiceTest {
 
         // Create test wishlist
         testWishlist = new Wishlist(testUser, testLocation);
-        testWishlist.setId(UUID.randomUUID());
     }
 
     // ============================================================
