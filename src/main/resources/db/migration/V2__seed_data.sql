@@ -8,10 +8,10 @@
 -- ============================================================
 -- Passwords are bcrypt hashes of 'password123'
 INSERT INTO users (id, email, password_hash, role, created_at) VALUES
-    ('a0000000-0000-0000-0000-000000000001', 'admin@travelpoints.com',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN',   '2025-01-01 10:00:00'),
-    ('b0000000-0000-0000-0000-000000000001', 'john.doe@example.com',      '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'TOURIST', '2025-01-15 12:00:00'),
-    ('b0000000-0000-0000-0000-000000000002', 'jane.smith@example.com',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'TOURIST', '2025-02-01 09:30:00'),
-    ('b0000000-0000-0000-0000-000000000003', 'alex.tourist@example.com',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'TOURIST', '2025-03-10 14:00:00');
+    ('a0000000-0000-0000-0000-000000000001', 'admin@travelpoints.com',    '$2a$10$LNt/APUkG.Z8jua11NPxCeUC3xf6imbu9eZO/JsEapjuUMk8n2MGa', 'ADMIN',   '2025-01-01 10:00:00'),
+    ('b0000000-0000-0000-0000-000000000001', 'john.doe@example.com',      '$2a$10$LNt/APUkG.Z8jua11NPxCeUC3xf6imbu9eZO/JsEapjuUMk8n2MGa', 'TOURIST', '2025-01-15 12:00:00'),
+    ('b0000000-0000-0000-0000-000000000002', 'jane.smith@example.com',    '$2a$10$LNt/APUkG.Z8jua11NPxCeUC3xf6imbu9eZO/JsEapjuUMk8n2MGa', 'TOURIST', '2025-02-01 09:30:00'),
+    ('b0000000-0000-0000-0000-000000000003', 'alex.tourist@example.com',  '$2a$10$LNt/APUkG.Z8jua11NPxCeUC3xf6imbu9eZO/JsEapjuUMk8n2MGa', 'TOURIST', '2025-03-10 14:00:00');
 
 -- ============================================================
 -- 2. OBJECTIVES (10 sample tourist objectives)
