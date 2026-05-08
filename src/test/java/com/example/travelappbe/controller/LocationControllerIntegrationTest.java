@@ -99,7 +99,9 @@ class LocationControllerIntegrationTest {
                 "Large public park in NYC",
                 "Park",
                 0.0,
-                "New York"
+                "New York",
+                40.7851,
+                -73.9683
         );
         location.setAdmin(admin);
         location.setAudioUrl("https://example.com/central-park.mp3");
@@ -116,6 +118,8 @@ class LocationControllerIntegrationTest {
                         "category", "Monument",
                         "price", 25.5,
                         "location_name", "New York",
+                        "latitude", 40.6892,
+                        "longitude", -74.0445,
                         "audio_url", "https://example.com/statue.mp3"
                 )
         );
@@ -138,7 +142,9 @@ class LocationControllerIntegrationTest {
                         "description", "Iconic monument",
                         "category", "Monument",
                         "price", 25.5,
-                        "location_name", "New York"
+                        "location_name", "New York",
+                        "latitude", 40.6892,
+                        "longitude", -74.0445
                 )
         );
 
@@ -163,7 +169,9 @@ class LocationControllerIntegrationTest {
                         "name", "Central Park Updated",
                         "category", "Park",
                         "price", 0.0,
-                        "location_name", "New York"
+                        "location_name", "New York",
+                        "latitude", 40.7851,
+                        "longitude", -73.9683
                 )
         );
 
@@ -183,7 +191,9 @@ class LocationControllerIntegrationTest {
                         "name", "Central Park Updated",
                         "category", "Park",
                         "price", 0.0,
-                        "location_name", "New York"
+                        "location_name", "New York",
+                        "latitude", 40.7851,
+                        "longitude", -73.9683
                 )
         );
 

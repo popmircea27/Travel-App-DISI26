@@ -23,15 +23,21 @@ public class LocationRequestDto {
     @JsonProperty("location_name")
     private String locationName;
 
+    private Double latitude;
+
+    private Double longitude;
+
     // Constructors
     public LocationRequestDto() {
     }
 
-    public LocationRequestDto(String name, String category, Double price, String locationName) {
+    public LocationRequestDto(String name, String category, Double price, String locationName, Double latitude, Double longitude) {
         this.name = name;
         this.category = category;
         this.price = price;
         this.locationName = locationName;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     // Getters and Setters
@@ -81,5 +87,21 @@ public class LocationRequestDto {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

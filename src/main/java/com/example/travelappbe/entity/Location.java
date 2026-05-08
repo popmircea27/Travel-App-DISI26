@@ -46,6 +46,12 @@ public class Location {
     @Column(name = "location_name", nullable = false, length = 255)
     private String locationName;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_id", nullable = false)
     private User admin;
@@ -61,12 +67,14 @@ public class Location {
     public Location() {
     }
 
-    public Location(String name, String description, String category, Double price, String locationName) {
+    public Location(String name, String description, String category, Double price, String locationName, Double latitude, Double longitude) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.price = price != null ? price : 0.0;
         this.locationName = locationName;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     // Getters and Setters
@@ -124,6 +132,22 @@ public class Location {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public User getAdmin() {

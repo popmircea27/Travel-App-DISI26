@@ -101,7 +101,9 @@ class WishlistControllerIntegrationTest {
                 "The iconic iron lattice tower built in 1889 for the World's Fair",
                 "Monument",
                 20.0,
-                "Paris"
+                "Paris",
+                48.8584,
+                2.2945
         );
         location1.setAdmin(savedUser);
         Location savedLocation1 = locationRepository.save(location1);
@@ -112,7 +114,9 @@ class WishlistControllerIntegrationTest {
                 "A colossal neoclassical sculpture located on Liberty Island",
                 "Monument",
                 25.0,
-                "New York"
+                "New York",
+                40.6892,
+                -74.0445
         );
         location2.setAdmin(savedUser);
         Location savedLocation2 = locationRepository.save(location2);

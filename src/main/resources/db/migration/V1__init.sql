@@ -32,6 +32,8 @@ CREATE TABLE objectives (
     category       VARCHAR(100)   NOT NULL,
     price          DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     location_name  VARCHAR(255)   NOT NULL,
+    latitude       DOUBLE PRECISION,
+    longitude      DOUBLE PRECISION,
     admin_id       UUID           NOT NULL,
     created_at     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

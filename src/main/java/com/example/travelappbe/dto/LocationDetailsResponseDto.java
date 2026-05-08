@@ -28,6 +28,10 @@ public class LocationDetailsResponseDto {
     @JsonProperty("location_name")
     private String locationName;
 
+    private Double latitude;
+
+    private Double longitude;
+
     @JsonProperty("admin_id")
     private UUID adminId;
 
@@ -47,7 +51,8 @@ public class LocationDetailsResponseDto {
     }
 
     public LocationDetailsResponseDto(UUID id, String name, String description, String audioUrl, String category,
-                                      Double price, String locationName, UUID adminId, Double averageRating,
+                                      Double price, String locationName, Double latitude, Double longitude, 
+                                      UUID adminId, Double averageRating,
                                       Integer totalReviews, List<ReviewResponseDto> reviews,
                                       LocalDateTime createdAt) {
         this.id = id;
@@ -57,6 +62,8 @@ public class LocationDetailsResponseDto {
         this.category = category;
         this.price = price;
         this.locationName = locationName;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.adminId = adminId;
         this.averageRating = averageRating;
         this.totalReviews = totalReviews;
@@ -119,6 +126,22 @@ public class LocationDetailsResponseDto {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public UUID getAdminId() {

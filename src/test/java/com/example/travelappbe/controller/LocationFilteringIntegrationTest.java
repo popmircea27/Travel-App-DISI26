@@ -58,15 +58,15 @@ class LocationFilteringIntegrationTest {
         User admin = new User("admin@test.com", "hash", UserRole.ADMIN);
         admin = userRepository.save(admin);
 
-        Location loc1 = new Location("Eiffel Tower", "Description", "Monument", 20.0, "Paris");
+        Location loc1 = new Location("Eiffel Tower", "Description", "Monument", 20.0, "Paris", 48.8584, 2.2945);
         loc1.setAdmin(admin);
         locationRepository.save(loc1);
 
-        Location loc2 = new Location("Louvre Museum", "Description", "Museum", 15.0, "Paris");
+        Location loc2 = new Location("Louvre Museum", "Description", "Museum", 15.0, "Paris", 48.8606, 2.3376);
         loc2.setAdmin(admin);
         locationRepository.save(loc2);
 
-        Location loc3 = new Location("Colosseum", "Description", "Monument", 30.0, "Rome");
+        Location loc3 = new Location("Colosseum", "Description", "Monument", 30.0, "Rome", 41.8902, 12.4922);
         loc3.setAdmin(admin);
         locationRepository.save(loc3);
     }

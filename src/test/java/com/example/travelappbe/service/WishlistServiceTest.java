@@ -67,7 +67,7 @@ class WishlistServiceTest {
         testUser.setId(userId);
 
         // Create test location
-        testLocation = new Location("Test Location", "Description", "Category", 10.0, "City");
+        testLocation = new Location("Test Location", "Description", "Category", 10.0, "City", 0.0, 0.0);
         testLocation.setId(locationId);
 
         // Create test wishlist

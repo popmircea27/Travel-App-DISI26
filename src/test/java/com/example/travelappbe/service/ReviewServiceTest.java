@@ -77,7 +77,9 @@ class ReviewServiceTest {
                 "Iconic iron tower in Paris",
                 "Monument",
                 20.0,
-                "Paris"
+                "Paris",
+                48.8584,
+                2.2945
         );
         testLocation.setId(locationId);
         testLocation.setAdmin(testUser); // mocked User
