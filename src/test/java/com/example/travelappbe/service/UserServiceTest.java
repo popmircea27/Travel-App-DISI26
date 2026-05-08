@@ -32,6 +32,7 @@ import com.example.travelappbe.exception.InvalidCredentialsException;
 import com.example.travelappbe.exception.UserAlreadyExistsException;
 import com.example.travelappbe.repository.UserRepository;
 import com.example.travelappbe.security.JwtTokenProvider;
+import com.example.travelappbe.service.UserProfileSyncService;
 
 /**
  * Unit tests for UserService
@@ -49,6 +50,9 @@ class UserServiceTest {
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private UserProfileSyncService userProfileSyncService;
 
     @InjectMocks
     private UserService userService;
@@ -257,4 +261,3 @@ class UserServiceTest {
         assertTrue(!result);
     }
 }
-
