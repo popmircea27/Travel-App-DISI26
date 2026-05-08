@@ -26,8 +26,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: man.mihai420@gmail.com
-    password: "password(to be changed)"
+    username: disitravelapp@gmail.com
+    password: vyedueiyrqppleuq
     properties:
       mail:
         smtp:
@@ -44,4 +44,4 @@ server:
 
 app:
   admin:
-    email: man.mihai420@gmail.com
+    email: disitravelapp@gmail.com

@@ -35,12 +35,20 @@ public class ContactController {
 
         String email = extractEmailFromToken(request);
         if (email == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Unauthorized"));
         }
 
-        emailService.sendContactMessage(email, contactRequestDto.getSubject(), contactRequestDto.getMessage());
-        
-        return ResponseEntity.ok(Map.of("message", "Mesaj trimis cu succes!"));
+        try {
+            emailService.sendContactMessage(email, contactRequestDto.getSubject(), contactRequestDto.getMessage());
+            return ResponseEntity.ok(Map.of("message", "Mesaj trimis cu succes!"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to send email: " + e.getMessage()));
+        }
     }
 
     private String extractEmailFromToken(HttpServletRequest request) {
