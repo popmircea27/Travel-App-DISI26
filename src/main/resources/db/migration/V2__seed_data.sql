@@ -50,13 +50,13 @@ INSERT INTO objectives (id, name, description, audio_url, category, price, locat
     ('c0000000-0000-0000-0000-000000000006',
      'Sighișoara Citadel',
      'A beautifully preserved medieval citadel and UNESCO World Heritage Site. The birthplace of Vlad the Impaler.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/sighisoara.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339376/sighisoara_l1a751.mp3',
      'Citadel', 25.00, 'Sighișoara, Mureș', 46.2197, 24.7956, 'a0000000-0000-0000-0000-000000000001', '2025-02-05 10:30:00'),
 
     ('c0000000-0000-0000-0000-000000000007',
      'Painted Monasteries of Bucovina',
      'A group of Romanian Orthodox monasteries in southern Bucovina, famous for their vivid exterior frescoes. UNESCO World Heritage Sites.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/bucovina.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339376/bucovina_kjyic0.mp3',
      'Religious', 15.00, 'Suceava', 47.6364, 26.2597, 'a0000000-0000-0000-0000-000000000001', '2025-02-10 11:00:00'),
 
     ('c0000000-0000-0000-0000-000000000008',
