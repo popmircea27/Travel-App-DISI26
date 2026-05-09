@@ -20,7 +20,7 @@ INSERT INTO objectives (id, name, description, audio_url, category, price, locat
     ('c0000000-0000-0000-0000-000000000001',
      'Bran Castle',
      'Known as Dracula''s Castle, Bran Castle is a national monument and landmark in Transylvania. Built in the 14th century, it sits on the border between Transylvania and Wallachia.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/bran.mp3',
+     'https://drive.google.com/uc?export=download&id=1pQWsLtMKCDzZjRJ6lJwPrxSbltn8LuUG',
      'Castle', 50.00, 'Bran, Brașov', 45.5148, 25.3836, 'a0000000-0000-0000-0000-000000000001', '2025-01-05 11:00:00'),
 
     ('c0000000-0000-0000-0000-000000000002',
