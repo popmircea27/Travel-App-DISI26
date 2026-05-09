@@ -347,6 +347,59 @@
 }
 
 .loc-retry-btn:hover { opacity: 0.88; }
+.loc-nearby-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--bg);
+    border: 1.5px solid #43a047;
+    border-radius: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: box-shadow 0.2s, transform 0.12s, background 0.15s;
+    text-align: left;
+}
+
+.loc-nearby-btn:hover {
+    background: rgba(67, 160, 71, 0.06);
+    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.15);
+}
+
+.loc-nearby-btn:active { transform: scale(0.97); }
+
+.loc-nearby-btn__icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.loc-nearby-btn__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.loc-nearby-btn__main {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2e7d32;
+    line-height: 1;
+}
+
+.loc-nearby-btn__sub {
+    font-size: 0.72rem;
+    color: var(--text);
+    opacity: 0.75;
+    line-height: 1;
+}
+
+@media (max-width: 700px) {
+    .loc-header__top { flex-direction: column; align-items: flex-start; }
+    .loc-nearby-btn  { width: 100%; }
+}
 
 /* ── Responsive ── */
 @media (max-width: 700px) {

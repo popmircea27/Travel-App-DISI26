@@ -357,10 +357,25 @@ export default function LocationsPage() {
         <div className="loc-page">
             {/* ── Header ── */}
             <div className="loc-header">
-                <h1 className="loc-title">Locații turistice</h1>
-                <p className="loc-subtitle">
-                    Explorează destinații din toată România
-                </p>
+                <div className="loc-header__top">
+                    <div>
+                        <h1 className="loc-title">Locații turistice</h1>
+                        <p className="loc-subtitle">
+                            Explorează destinații din toată România
+                        </p>
+                    </div>
+                    <button
+                        className="loc-nearby-btn"
+                        onClick={() => navigate("/nearby")}
+                        type="button"
+                    >
+                        <span className="loc-nearby-btn__icon" aria-hidden="true">🧭</span>
+                        <span className="loc-nearby-btn__text">
+                <span className="loc-nearby-btn__main">Explorează în jur</span>
+                <span className="loc-nearby-btn__sub">prieteni · locații · atracții</span>
+            </span>
+                    </button>
+                </div>
             </div>
 
             {/* ── Filtre – vizibile doar când datele sunt încărcate ── */}
