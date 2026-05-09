@@ -20,31 +20,31 @@ INSERT INTO objectives (id, name, description, audio_url, category, price, locat
     ('c0000000-0000-0000-0000-000000000001',
      'Bran Castle',
      'Known as Dracula''s Castle, Bran Castle is a national monument and landmark in Transylvania. Built in the 14th century, it sits on the border between Transylvania and Wallachia.',
-     'https://drive.google.com/uc?export=download&id=1pQWsLtMKCDzZjRJ6lJwPrxSbltn8LuUG',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339375/bran_pzmsrx.mp3',
      'Castle', 50.00, 'Bran, Brașov', 45.5148, 25.3836, 'a0000000-0000-0000-0000-000000000001', '2025-01-05 11:00:00'),
 
     ('c0000000-0000-0000-0000-000000000002',
      'Peleș Castle',
      'A Neo-Renaissance castle nestled in the Carpathian Mountains. It was the summer residence of Romanian kings and is considered one of the most beautiful castles in Europe.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/peles.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339376/peles_kgzf3f.mp3',
      'Castle', 70.00, 'Sinaia, Prahova', 45.3414, 25.5349, 'a0000000-0000-0000-0000-000000000001', '2025-01-06 09:00:00'),
 
     ('c0000000-0000-0000-0000-000000000003',
      'Salina Turda',
      'An ancient salt mine in Turda, Transylvania, converted into a unique underground amusement park and museum with a subterranean lake.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/turda.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339375/turda_ohom1g.mp3',
      'Museum', 40.00, 'Turda, Cluj', 46.5742, 23.7761, 'a0000000-0000-0000-0000-000000000001', '2025-01-10 10:00:00'),
 
     ('c0000000-0000-0000-0000-000000000004',
      'Palace of the Parliament',
      'The world''s heaviest building and the second-largest administrative building after the Pentagon. A monumental structure in the heart of Bucharest.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/palatul_parlamentului.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339376/palatul_parlamentului_nix8v4.mp3',
      'Architecture', 60.00, 'Bucharest', 44.4268, 26.0881, 'a0000000-0000-0000-0000-000000000001', '2025-01-12 13:00:00'),
 
     ('c0000000-0000-0000-0000-000000000005',
      'Transfăgărășan Highway',
      'A spectacular mountain road crossing the southern section of the Carpathian Mountains. Often called the best road in the world by Top Gear.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/transfagarasan.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339376/transfagarasan_alze49.mp3',
      'Nature', 0.00, 'Argeș / Sibiu', 45.3667, 24.6667, 'a0000000-0000-0000-0000-000000000001', '2025-02-01 08:00:00'),
 
     ('c0000000-0000-0000-0000-000000000006',
@@ -62,19 +62,19 @@ INSERT INTO objectives (id, name, description, audio_url, category, price, locat
     ('c0000000-0000-0000-0000-000000000008',
      'Danube Delta',
      'Europe''s best preserved delta and a UNESCO Biosphere Reservation. Home to over 300 species of birds and 160 species of fish.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/delta.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339375/delta_pdnitc.mp3',
      'Nature', 30.00, 'Tulcea', 44.8071, 28.8638, 'a0000000-0000-0000-0000-000000000001', '2025-02-15 09:00:00'),
 
     ('c0000000-0000-0000-0000-000000000009',
      'Cluj-Napoca Botanical Garden',
      'One of the largest botanical gardens in Europe, featuring over 10,000 plant species across themed gardens including a Japanese garden.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/gb_cluj.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339375/gb_cluj_xdh1uv.mp3',
      'Park', 10.00, 'Cluj-Napoca, Cluj', 46.7712, 23.6236, 'a0000000-0000-0000-0000-000000000001', '2025-03-01 08:30:00'),
 
     ('c0000000-0000-0000-0000-000000000010',
      'Corvin Castle',
      'One of the largest castles in Europe, built in Gothic-Renaissance style. Located in Hunedoara, it is one of the Seven Wonders of Romania.',
-     'https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=sharing/hunyad.mp3',
+     'https://res.cloudinary.com/drsynenv4/video/upload/v1778339375/hunyad_g8xyja.mp3',
      'Castle', 45.00, 'Hunedoara', 45.7667, 22.9167, 'a0000000-0000-0000-0000-000000000001', '2025-03-05 14:00:00');
 
 -- ============================================================
