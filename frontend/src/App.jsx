@@ -17,7 +17,7 @@ import { AuthProvider } from "./context/AuthContext";
 // Layout cu navbar adaptiv
 import AppLayout    from "./components/AppLayout.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
-
+import AdminDashboardPage from "./pages/adminDashboardPage/AdminDashboardPage.jsx";
 // Pagini
 import HomePage           from "./pages/homePage/HomePage.jsx";
 import LoginPage          from "./pages/loginPage/LoginPage.jsx";
@@ -59,6 +59,11 @@ function App() {
                     <Route path="/contact" element={
                         <PrivateRoute>
                             <AppLayout><ContactPage /></AppLayout>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/admin" element={
+                        <PrivateRoute>
+                            <AppLayout><AdminDashboardPage /></AppLayout>
                         </PrivateRoute>
                     } />
                     <Route path="/ai-itinerary" element={
