@@ -32,7 +32,11 @@ function LoginPage() {
         setErrors({});
         try {
             const data = await login(email, password);
-            handleLoginSuccess(data.token, { email });
+            let role = null;
+            try {
+                role = JSON.parse(atob(data.token.split(".")[1])).role;
+            } catch {}
+            handleLoginSuccess(data.token, { email, role });
             navigate("/");
         } catch (err) {
             setErrors({ general: err.message || "Email sau parolă greșite." });

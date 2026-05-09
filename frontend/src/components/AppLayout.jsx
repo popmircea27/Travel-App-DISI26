@@ -63,6 +63,16 @@ export default function AppLayout({ children }) {
                                 <span>Contact</span>
                             </NavLink>
 
+                            {user?.role === "ADMIN" && (
+                                <NavLink
+                                    to="/admin"
+                                    className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
+                                >
+                                    <span>📊</span>
+                                    <span>Admin</span>
+                                </NavLink>
+                            )}
+
                             <NavLink
                                 to="/profile"
                                 className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
