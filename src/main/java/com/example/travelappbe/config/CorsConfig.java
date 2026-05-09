@@ -28,7 +28,8 @@ public class CorsConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",      // Vite dev server
                 "http://localhost:3000",       // Alternative port
-                "http://127.0.0.1:5173"        // Loopback address
+                "http://127.0.0.1:5173",        // Loopback address
+                "https://drive.google.com/drive/folders/1aoH_6R-YonBdYIvJ5BGEn8prf1W97Sp0?usp=drive_link"
         ));
         
         // Allow these HTTP methods
