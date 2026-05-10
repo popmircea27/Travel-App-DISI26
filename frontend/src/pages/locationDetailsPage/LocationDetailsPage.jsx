@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { addReview, getLocationById, getReviews } from "../../services/api.js";
+import { addReview, getLocationById, getReviews, addToWishlist, removeFromWishlist, checkWishlist } from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "./LocationDetailsPage.css";
 
@@ -45,11 +45,65 @@ function ReviewItem({ review }) {
     );
 }
 
+// ─── Buton Wishlist ────────────────────────────────────────────
+function WishlistButton({ locationId }) {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    const [inWishlist, setInWishlist] = useState(false);
+    const [checking, setChecking]     = useState(true);
+    const [toggling, setToggling]     = useState(false);
+
+    useEffect(() => {
+        if (!user) { setChecking(false); return; }
+        checkWishlist(locationId)
+            .then((res) => setInWishlist(res?.inWishlist ?? false))
+            .catch(() => {})
+            .finally(() => setChecking(false));
+    }, [locationId, user]);
+
+    const handleToggle = async () => {
+        if (!user) { navigate("/login"); return; }
+        setToggling(true);
+        try {
+            if (inWishlist) {
+                await removeFromWishlist(locationId);
+                setInWishlist(false);
+            } else {
+                await addToWishlist(locationId);
+                setInWishlist(true);
+            }
+        } catch (err) {
+            if (err.message?.includes("already exists")) setInWishlist(true);
+        } finally {
+            setToggling(false);
+        }
+    };
+
+    if (checking) return null;
+
+    return (
+        <button
+            className={`ld-wishlist-btn ${inWishlist ? "ld-wishlist-btn--active" : ""}`}
+            onClick={handleToggle}
+            disabled={toggling}
+            type="button"
+            aria-label={inWishlist ? "Scoate din wishlist" : "Adaugă la wishlist"}
+        >
+            <span aria-hidden="true">{toggling ? "…" : inWishlist ? "♥" : "♡"}</span>
+            <span>
+                {toggling ? "Se actualizează..." : inWishlist ? "Salvat" : "Adaugă la wishlist"}
+            </span>
+        </button>
+    );
+}
+
+// ─── Componenta principală ─────────────────────────────────────
 export default function LocationDetailsPage() {
     const REVIEWS_PER_PAGE = 4;
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user, handleLogout } = useAuth(); // ← adăugat user
+    const { user, handleLogout } = useAuth();
 
     const [location, setLocation] = useState(null);
     const [reviews, setReviews] = useState([]);
@@ -90,9 +144,7 @@ export default function LocationDetailsPage() {
         }
     };
 
-    useEffect(() => {
-        fetchLocationDetails();
-    }, [id]);
+    useEffect(() => { fetchLocationDetails(); }, [id]);
 
     const validateReview = () => {
         const numericRating = Number(rating);
@@ -162,10 +214,17 @@ export default function LocationDetailsPage() {
             )}
 
             <section className="ld-card">
-                <h1>{location.name}</h1>
-                <p className="ld-place">
-                    {[location.city, location.country].filter(Boolean).join(", ") || "Locație nedefinită"}
-                </p>
+                {/* Titlu + wishlist pe același rând */}
+                <div className="ld-card__header">
+                    <div>
+                        <h1>{location.name}</h1>
+                        <p className="ld-place">
+                            {[location.city, location.country].filter(Boolean).join(", ") || "Locație nedefinită"}
+                        </p>
+                    </div>
+                    <WishlistButton locationId={id} />
+                </div>
+
                 <p>{location.description || "Nu există descriere disponibilă pentru această locație."}</p>
                 <div className="ld-coords">
                     <span>Lat: {location.latitude ?? "—"}</span>
@@ -173,11 +232,9 @@ export default function LocationDetailsPage() {
                 </div>
             </section>
 
-            {/* ── Secțiunea de review-uri ── */}
             <section className="ld-card">
                 <h2>Review-uri</h2>
 
-                {/* Formularul de review – DOAR dacă ești logat */}
                 {user ? (
                     <form className="ld-review-form" onSubmit={handleReviewSubmit} noValidate>
                         <div className="ld-review-form__row">
@@ -217,7 +274,6 @@ export default function LocationDetailsPage() {
                         </button>
                     </form>
                 ) : (
-                    /* Mesaj pentru utilizatorul nelogat */
                     <div className="ld-login-prompt">
                         <span className="ld-login-prompt__icon" aria-hidden="true">🔐</span>
                         <p>
@@ -227,7 +283,6 @@ export default function LocationDetailsPage() {
                     </div>
                 )}
 
-                {/* Review-urile – vizibile pentru toți */}
                 {reviews.length === 0 ? (
                     <p className="ld-no-reviews">Nu există review-uri momentan pentru această locație.</p>
                 ) : (
@@ -237,7 +292,6 @@ export default function LocationDetailsPage() {
                                 <ReviewItem key={review.id} review={review} />
                             ))}
                         </div>
-
                         <div className="ld-reviews-pagination" aria-label="Paginare review-uri">
                             <button
                                 className="ld-btn"

@@ -1,15 +1,34 @@
 // src/components/AppLayout.jsx
-// Navbar vizibil întotdeauna.
-// Nelogat  → logo + Locații, Login, Register
-// Logat    → logo + Dashboard, Locații, AI Itinerary, Contact, Profil, Logout
 
 import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { getNotifications } from "../services/api.js";
 import "./AppLayout.css";
 
 export default function AppLayout({ children }) {
     const { user, handleLogout } = useAuth();
     const navigate = useNavigate();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    // Polling notificări necitite la fiecare 60s (doar dacă e logat)
+    useEffect(() => {
+        if (!user) { setUnreadCount(0); return; }
+
+        const fetchUnread = async () => {
+            try {
+                const data = await getNotifications();
+                const count = Array.isArray(data) ? data.filter((n) => !n.read).length : 0;
+                setUnreadCount(count);
+            } catch {
+                // silently ignore – nu blocăm UI-ul
+            }
+        };
+
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 60000);
+        return () => clearInterval(interval);
+    }, [user]);
 
     const onLogout = () => {
         handleLogout();
@@ -20,7 +39,6 @@ export default function AppLayout({ children }) {
         <div className="app-layout">
             <nav className="app-navbar" aria-label="Navigare principală">
 
-                {/* Brand – merge mereu la / */}
                 <NavLink to="/" className="app-navbar__brand">
                     <span className="app-navbar__brand-icon">🌍</span>
                     <span>TravelApp</span>
@@ -28,55 +46,53 @@ export default function AppLayout({ children }) {
 
                 <div className="app-navbar__links">
                     {user ? (
-                        /* ── LOGAT ── */
                         <>
-                            <NavLink
-                                to="/"
-                                end
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/" end className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>🏠</span>
                                 <span>Dashboard</span>
                             </NavLink>
 
-                            <NavLink
-                                to="/locations"
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/locations" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>📍</span>
                                 <span>Locații</span>
                             </NavLink>
 
-                            <NavLink
-                                to="/ai-itinerary"
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/wishlist" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
+                                <span>♥</span>
+                                <span>Wishlist</span>
+                            </NavLink>
+
+                            {/* Notificări cu badge */}
+                            <NavLink to="/notifications" className={({ isActive }) => "app-navbar__link app-navbar__link--notif" + (isActive ? " active" : "")}>
+                                <span className="app-navbar__notif-wrap">
+                                    🔔
+                                    {unreadCount > 0 && (
+                                        <span className="app-navbar__notif-badge" aria-label={`${unreadCount} notificări necitite`}>
+                                            {unreadCount > 9 ? "9+" : unreadCount}
+                                        </span>
+                                    )}
+                                </span>
+                                <span>Notificări</span>
+                            </NavLink>
+
+                            <NavLink to="/ai-itinerary" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>🤖</span>
                                 <span>AI Itinerary</span>
                             </NavLink>
 
-                            <NavLink
-                                to="/contact"
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/contact" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>✉️</span>
                                 <span>Contact</span>
                             </NavLink>
 
                             {user?.role === "ADMIN" && (
-                                <NavLink
-                                    to="/admin"
-                                    className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                                >
+                                <NavLink to="/admin" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                     <span>📊</span>
                                     <span>Admin</span>
                                 </NavLink>
                             )}
 
-                            <NavLink
-                                to="/profile"
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/profile" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>👤</span>
                                 <span>Profilul meu</span>
                             </NavLink>
@@ -92,29 +108,20 @@ export default function AppLayout({ children }) {
                             </button>
                         </>
                     ) : (
-                        /* ── NELOGAT ── */
                         <>
-                            <NavLink
-                                to="/locations"
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/locations" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>📍</span>
                                 <span>Locații</span>
                             </NavLink>
 
-                            <NavLink
-                                to="/login"
-                                className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}
-                            >
+                            <NavLink to="/login" className={({ isActive }) => "app-navbar__link" + (isActive ? " active" : "")}>
                                 <span>🔐</span>
                                 <span>Login</span>
                             </NavLink>
 
                             <NavLink
                                 to="/register"
-                                className={({ isActive }) =>
-                                    "app-navbar__link app-navbar__register" + (isActive ? " active" : "")
-                                }
+                                className={({ isActive }) => "app-navbar__link app-navbar__register" + (isActive ? " active" : "")}
                             >
                                 <span>✨</span>
                                 <span>Register</span>

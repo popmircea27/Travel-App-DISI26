@@ -266,6 +266,65 @@ export async function uploadLocationAudio(locationId, file) {
     return response.json();
 }
 
+// ─── WISHLIST ──────────────────────────────────────────────────
+
+/**
+ * GET /api/wishlist
+ * Returnează lista locațiilor din wishlist-ul userului autentificat.
+ */
+export async function getWishlist() {
+    return request("/wishlist");
+}
+
+/**
+ * POST /api/wishlist
+ * Adaugă o locație în wishlist.
+ * Body: { location_id: UUID }
+ */
+export async function addToWishlist(locationId) {
+    return request("/wishlist", {
+        method: "POST",
+        body: JSON.stringify({ location_id: locationId }),
+    });
+}
+
+/**
+ * DELETE /api/wishlist/{locationId}
+ * Scoate o locație din wishlist.
+ */
+export async function removeFromWishlist(locationId) {
+    return request(`/wishlist/${locationId}`, { method: "DELETE" });
+}
+
+/**
+ * GET /api/wishlist/check/{locationId}
+ * Verifică dacă o locație e în wishlist.
+ * Răspuns: { inWishlist: boolean }
+ */
+export async function checkWishlist(locationId) {
+    return request(`/wishlist/check/${locationId}`);
+}
+
+// ─── NOTIFICATIONS ────────────────────────────────────────────
+
+/**
+ * GET /api/notifications
+ * Returnează notificările userului autentificat.
+ * Răspuns: List<NotificationDto> cu câmpuri: id, title, message, read, createdAt
+ */
+export async function getNotifications() {
+    return request("/notifications");
+}
+
+/**
+ * PUT /api/notifications/{id}/read
+ * Marchează o notificare ca citită.
+ */
+export async function markNotificationAsRead(id) {
+    return request(`/notifications/${id}/read`, { method: "PUT" });
+}
+
+
 // ─── AI ITINERARY PLANNER ─────────────────────────────────────
 
 // ─── AI ITINERARY PLANNER ─────────────────────────────────────
