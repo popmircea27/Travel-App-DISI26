@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: var(--bg);
+    width: 100%;
 }
 
 /* ── Navbar ── */
@@ -12,14 +12,25 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px;
+    /* padding lateral mic ca să nu se taie pe ecrane mici */
+    padding: 0 24px;
     height: 60px;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
+    /* full width garantat */
+    width: 100%;
+    box-sizing: border-box;
+    /* dacă butoanele nu încap, apare scroll orizontal DOAR pe nav, nu pe tot */
+    overflow-x: auto;
+    gap: 12px;
 }
+
+/* Ascunde scrollbar-ul vizual al navbar-ului */
+.app-navbar::-webkit-scrollbar { display: none; }
+.app-navbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .app-navbar__brand {
     display: flex;
@@ -29,27 +40,26 @@
     font-weight: 700;
     color: var(--text-h);
     text-decoration: none;
-    flex-shrink: 0;
+    flex-shrink: 0; /* nu se comprimă niciodată */
 }
 
-.app-navbar__brand-icon {
-    font-size: 1.4rem;
-}
+.app-navbar__brand-icon { font-size: 1.4rem; }
 
 /* ── Links group ── */
 .app-navbar__links {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
+    flex-shrink: 0; /* NU se comprimă — cresc în afara layout-ului */
 }
 
 .app-navbar__link {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
+    gap: 5px;
+    padding: 6px 10px;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: var(--text);
     text-decoration: none;
@@ -58,7 +68,8 @@
     background: transparent;
     cursor: pointer;
     font-family: inherit;
-    white-space: nowrap;
+    white-space: nowrap; /* text pe o singură linie */
+    flex-shrink: 0;
 }
 
 .app-navbar__link:hover {
@@ -72,7 +83,36 @@
     font-weight: 600;
 }
 
-/* Buton Register – mai evidențiat */
+/* ── Notificare badge ── */
+.app-navbar__link--notif { position: relative; }
+
+.app-navbar__notif-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+.app-navbar__notif-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #e53935;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+    box-shadow: 0 0 0 2px var(--bg);
+}
+
+/* ── Register button ── */
 .app-navbar__register {
     background: linear-gradient(135deg, #43a047, #1565c0);
     color: #fff !important;
@@ -90,11 +130,11 @@
     color: #fff !important;
 }
 
-/* Buton Logout */
+/* ── Logout button ── */
 .app-navbar__logout {
     color: var(--text);
     border: 1px solid var(--border);
-    margin-left: 8px;
+    margin-left: 4px;
 }
 
 .app-navbar__logout:hover {
@@ -110,25 +150,13 @@
     box-sizing: border-box;
 }
 
-/* ── Responsive ── */
-@media (max-width: 600px) {
-    .app-navbar {
-        padding: 0 16px;
-    }
+/* ── Responsive: pe mobile ascunde textul, păstrează iconițele ── */
+@media (max-width: 768px) {
+    .app-navbar { padding: 0 12px; }
 
-    .app-navbar__brand span:last-child {
-        display: none;
-    }
+    /* Ascunde textul din linkuri, lasă doar iconița */
+    .app-navbar__link span:last-child { display: none; }
+    .app-navbar__brand span:last-child { display: none; }
 
-    .app-navbar__link span:first-child {
-        /* păstrăm iconița */
-    }
-
-    .app-navbar__link span:last-child {
-        display: none;
-    }
-
-    .app-navbar__link {
-        padding: 8px 10px;
-    }
+    .app-navbar__link { padding: 8px; }
 }

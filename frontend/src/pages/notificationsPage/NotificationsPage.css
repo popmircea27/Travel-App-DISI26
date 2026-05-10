@@ -1,0 +1,318 @@
+/* src/pages/notificationsPage/NotificationsPage.css */
+
+.notif-page {
+    padding: 40px 32px 64px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* ── Header ── */
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.notif-title {
+    font-size: 1.8rem !important;
+    font-weight: 600;
+    color: var(--text-h);
+    letter-spacing: -0.4px !important;
+    margin: 0 0 6px !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Badge număr necitite de lângă titlu */
+.notif-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #e53935;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.notif-subtitle {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin: 0;
+}
+
+/* Buton marchează toate */
+.notif-mark-all-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.notif-mark-all-btn:hover {
+    border-color: #43a047;
+    color: #2e7d32;
+}
+
+/* ── Filter tabs ── */
+.notif-filters {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+}
+
+.notif-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s;
+    margin-bottom: -1px;
+}
+
+.notif-filter-btn:hover { color: #2e7d32; }
+
+.notif-filter-btn--active {
+    color: #2e7d32;
+    border-bottom-color: #43a047;
+    font-weight: 600;
+}
+
+.notif-filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: rgba(229, 57, 53, 0.12);
+    color: #e53935;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* ── List ── */
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 700px;
+}
+
+/* ── Item ── */
+.notif-item {
+    display: flex;
+    gap: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.notif-item:not(.notif-item--skeleton):hover {
+    box-shadow: var(--shadow);
+}
+
+/* Indicator lateral colorat */
+.notif-item__indicator {
+    width: 4px;
+    flex-shrink: 0;
+    background: var(--border);
+    border-radius: 12px 0 0 12px;
+}
+
+.notif-item--unread .notif-item__indicator {
+    background: #43a047;
+}
+
+.notif-item--unread {
+    border-color: rgba(67, 160, 71, 0.30);
+    background: rgba(67, 160, 71, 0.03);
+}
+
+.notif-item__content {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-item__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.notif-item__title {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: var(--text-h) !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+}
+
+.notif-item--read .notif-item__title {
+    font-weight: 500 !important;
+    color: var(--text) !important;
+}
+
+/* Badge NOU */
+.notif-item__new {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #43a047;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.notif-item__message {
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.notif-item__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.notif-item__date {
+    font-size: 0.75rem;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+.notif-item__read-btn {
+    background: none;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #2e7d32;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    transition: opacity 0.15s;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.notif-item__read-btn:hover { opacity: 0.7; }
+
+/* ── Skeleton ── */
+@keyframes notif-shimmer {
+    0%   { background-position: -500px 0; }
+    100% { background-position:  500px 0; }
+}
+
+.notif-sk {
+    background: linear-gradient(90deg, var(--border) 25%, var(--code-bg) 50%, var(--border) 75%);
+    background-size: 1000px 100%;
+    animation: notif-shimmer 1.4s infinite linear;
+    border-radius: 6px;
+    margin: 4px 0;
+}
+
+.notif-item--skeleton { padding: 16px 18px; display: block; }
+.notif-sk--title  { height: 16px; width: 60%; }
+.notif-sk--line   { height: 12px; width: 90%; }
+.notif-sk--short  { width: 50%; }
+
+/* ── Empty / Error ── */
+.notif-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 72px 24px;
+    text-align: center;
+}
+
+.notif-empty__icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.notif-empty h2 {
+    font-size: 1.1rem !important;
+    color: var(--text-h);
+    margin: 0 !important;
+}
+
+.notif-empty p {
+    font-size: 0.9rem;
+    color: var(--text);
+    max-width: 300px;
+}
+
+.notif-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 48px 24px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.notif-retry-btn {
+    padding: 9px 22px;
+    background: linear-gradient(135deg, #43a047, #1565c0);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+
+.notif-retry-btn:hover { opacity: 0.88; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .notif-page { padding: 28px 16px 48px; }
+    .notif-list { max-width: 100%; }
+    .notif-header { flex-direction: column; }
+}
