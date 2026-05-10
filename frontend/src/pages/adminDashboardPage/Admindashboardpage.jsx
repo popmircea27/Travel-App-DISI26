@@ -1,11 +1,8 @@
 // src/pages/adminDashboardPage/AdminDashboardPage.jsx
-//
-// US3 – Admin Dashboard UI
-// Date: GET /api/users (ADMIN), GET /api/locations, GET /api/locations/{id}/reviews
-
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { broadcastNotification } from "../../services/api.js";
 import "./AdminDashboardPage.css";
 
 // ─── Constants ───────────────────────────────────────────────────
@@ -65,6 +62,7 @@ function DonutChart({ slices, size = 120 }) {
     if (!slices || slices.length === 0) return <p className="adm-no-data">Fără date</p>;
     const total = slices.reduce((s, d) => s + d.value, 0) || 1;
     const COLORS = ["#43a047", "#1565c0", "#f57c00", "#c62828", "#6a1b9a", "#00838f"];
+    // folosim o variabilă locală, nu stare
     let cumAngle = -90;
 
     const arcs = slices.map((d, i) => {
@@ -206,16 +204,41 @@ function RecentUsers({ users }) {
     );
 }
 
-// ─── Main page ────────────────────────────────────────────────────
+// ─── Componenta principală ─────────────────────────────────────
 export default function AdminDashboardPage() {
     const { handleLogout } = useAuth();
     const navigate = useNavigate();
 
-    const [users,     setUsers]     = useState([]);
+    const [users, setUsers] = useState([]);
     const [locations, setLocations] = useState([]);
-    const [loading,   setLoading]   = useState(true);
-    const [error,     setError]     = useState(null);
-    const [activeTab, setActiveTab] = useState("overview"); // overview | users | locations
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState("overview");
+
+    // State pentru broadcast
+    const [broadcastTitle, setBroadcastTitle] = useState('');
+    const [broadcastMessage, setBroadcastMessage] = useState('');
+    const [broadcastLoading, setBroadcastLoading] = useState(false);
+    const [broadcastSuccess, setBroadcastSuccess] = useState(false);
+    const [broadcastError, setBroadcastError] = useState('');
+
+    const handleBroadcast = async (e) => {
+        e.preventDefault();
+        setBroadcastLoading(true);
+        setBroadcastSuccess(false);
+        setBroadcastError('');
+        try {
+            await broadcastNotification(broadcastTitle, broadcastMessage);
+            setBroadcastSuccess(true);
+            setBroadcastTitle('');
+            setBroadcastMessage('');
+            setTimeout(() => setBroadcastSuccess(false), 3000);
+        } catch (err) {
+            setBroadcastError(err.message || 'Eroare la trimitere');
+        } finally {
+            setBroadcastLoading(false);
+        }
+    };
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -246,13 +269,12 @@ export default function AdminDashboardPage() {
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
-    // ── Derived stats ──
-    const totalUsers     = users.length;
-    const totalTourists  = users.filter((u) => (u.role || "").toUpperCase() === "TOURIST").length;
-    const totalAdmins    = users.filter((u) => (u.role || "").toUpperCase() === "ADMIN").length;
+    // Derived stats
+    const totalUsers = users.length;
+    const totalTourists = users.filter((u) => (u.role || "").toUpperCase() === "TOURIST").length;
+    const totalAdmins = users.filter((u) => (u.role || "").toUpperCase() === "ADMIN").length;
     const totalLocations = locations.length;
 
-    // category distribution
     const categoryMap = {};
     locations.forEach((l) => {
         const cat = l.category || "Altele";
@@ -262,13 +284,11 @@ export default function AdminDashboardPage() {
         .map(([label, value]) => ({ label, value }))
         .sort((a, b) => b.value - a.value);
 
-    // user role distribution
     const roleData = [
         { label: "Turiști", value: totalTourists },
-        { label: "Admini",  value: totalAdmins },
+        { label: "Admini", value: totalAdmins },
     ].filter((d) => d.value > 0);
 
-    // locations per city (top 6)
     const cityMap = {};
     locations.forEach((l) => {
         const city = l.city || (l.location_name || l.locationName || "").split(",")[0].trim() || "Necunoscut";
@@ -279,11 +299,8 @@ export default function AdminDashboardPage() {
         .sort((a, b) => b.value - a.value)
         .slice(0, 6);
 
-    // ── Render ──
     return (
         <div className="adm-page">
-
-            {/* ── Header ── */}
             <div className="adm-header">
                 <div>
                     <h1 className="adm-title">Dashboard Admin</h1>
@@ -306,7 +323,6 @@ export default function AdminDashboardPage() {
                 </button>
             </div>
 
-            {/* ── Error ── */}
             {error && (
                 <div className="adm-error" role="alert">
                     <span>⚠</span>
@@ -318,32 +334,38 @@ export default function AdminDashboardPage() {
                 </div>
             )}
 
-            {/* ── Tabs ── */}
             {!error && (
                 <div className="adm-tabs">
-                    {[
-                        { key: "overview",   label: "📊 Prezentare generală" },
-                        { key: "users",      label: "👥 Utilizatori" },
-                        { key: "locations",  label: "📍 Locații" },
-                    ].map(({ key, label }) => (
-                        <button
-                            key={key}
-                            className={`adm-tab${activeTab === key ? " adm-tab--active" : ""}`}
-                            onClick={() => setActiveTab(key)}
-                            type="button"
-                        >
-                            {label}
-                        </button>
-                    ))}
+                    <button
+                        className={`adm-tab${activeTab === "overview" ? " adm-tab--active" : ""}`}
+                        onClick={() => setActiveTab("overview")}
+                    >
+                        📊 Prezentare generală
+                    </button>
+                    <button
+                        className={`adm-tab${activeTab === "users" ? " adm-tab--active" : ""}`}
+                        onClick={() => setActiveTab("users")}
+                    >
+                        👥 Utilizatori
+                    </button>
+                    <button
+                        className={`adm-tab${activeTab === "locations" ? " adm-tab--active" : ""}`}
+                        onClick={() => setActiveTab("locations")}
+                    >
+                        📍 Locații
+                    </button>
+                    <button
+                        className={`adm-tab${activeTab === "notifications" ? " adm-tab--active" : ""}`}
+                        onClick={() => setActiveTab("notifications")}
+                    >
+                        📢 Notificări
+                    </button>
                 </div>
             )}
 
-            {/* ═══════════════════════════════════════
-                TAB: OVERVIEW
-            ═══════════════════════════════════════ */}
+            {/* OVERVIEW TAB */}
             {!error && activeTab === "overview" && (
                 <>
-                    {/* Stat cards */}
                     <div className="adm-stats-grid">
                         {loading ? (
                             <>
@@ -370,68 +392,91 @@ export default function AdminDashboardPage() {
                             </>
                         )}
                     </div>
-
-                    {/* Charts row */}
                     <div className="adm-charts-grid">
                         <div className="adm-card">
                             <h2 className="adm-card-title">Distribuție utilizatori</h2>
-                            {loading
-                                ? <Skeleton h={120} />
-                                : <DonutChart slices={roleData} size={140} />
-                            }
+                            {loading ? <Skeleton h={120} /> : <DonutChart slices={roleData} size={140} />}
                         </div>
-
                         <div className="adm-card">
                             <h2 className="adm-card-title">Locații pe categorie</h2>
-                            {loading
-                                ? <Skeleton h={160} />
-                                : <BarChart data={categoryData} colorVar="--adm-accent" />
-                            }
+                            {loading ? <Skeleton h={160} /> : <BarChart data={categoryData} colorVar="--adm-accent" />}
                         </div>
-
                         <div className="adm-card">
                             <h2 className="adm-card-title">Top orașe</h2>
-                            {loading
-                                ? <Skeleton h={160} />
-                                : <BarChart data={cityData} colorVar="--adm-blue" />
-                            }
+                            {loading ? <Skeleton h={160} /> : <BarChart data={cityData} colorVar="--adm-blue" />}
                         </div>
                     </div>
                 </>
             )}
 
-            {/* ═══════════════════════════════════════
-                TAB: USERS
-            ═══════════════════════════════════════ */}
+            {/* USERS TAB */}
             {!error && activeTab === "users" && (
                 <div className="adm-card adm-card--full">
                     <div className="adm-card-header">
                         <h2 className="adm-card-title">Toți utilizatorii</h2>
                         <span className="adm-count-badge">{totalUsers}</span>
                     </div>
-                    {loading
-                        ? <><Skeleton h={40} /><br /><Skeleton h={40} /><br /><Skeleton h={40} /></>
-                        : <RecentUsers users={users} />
-                    }
+                    {loading ? <><Skeleton h={40} /><br /><Skeleton h={40} /><br /><Skeleton h={40} /></> : <RecentUsers users={users} />}
                 </div>
             )}
 
-            {/* ═══════════════════════════════════════
-                TAB: LOCATIONS
-            ═══════════════════════════════════════ */}
+            {/* LOCATIONS TAB */}
             {!error && activeTab === "locations" && (
                 <div className="adm-card adm-card--full">
                     <div className="adm-card-header">
                         <h2 className="adm-card-title">Toate locațiile</h2>
                         <span className="adm-count-badge">{totalLocations}</span>
                     </div>
-                    {loading
-                        ? <><Skeleton h={40} /><br /><Skeleton h={40} /><br /><Skeleton h={40} /></>
-                        : <RecentLocations locations={locations} />
-                    }
+                    {loading ? <><Skeleton h={40} /><br /><Skeleton h={40} /><br /><Skeleton h={40} /></> : <RecentLocations locations={locations} />}
                 </div>
             )}
 
+            {/* NOTIFICATIONS TAB - Admin broadcast */}
+            {!error && activeTab === "notifications" && (
+                <div className="adm-card adm-card--full">
+                    <h2 className="adm-card-title">Trimite notificare globală</h2>
+                    <form
+                        className="adm-notify-form"
+                        onSubmit={handleBroadcast}
+                        style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}
+                    >
+                        <div className="adm-form-group">
+                            <label htmlFor="notify-title">Titlu *</label>
+                            <input
+                                id="notify-title"
+                                type="text"
+                                value={broadcastTitle}
+                                onChange={(e) => setBroadcastTitle(e.target.value)}
+                                required
+                                className="adm-form-input"
+                                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                            />
+                        </div>
+                        <div className="adm-form-group">
+                            <label htmlFor="notify-message">Mesaj *</label>
+                            <textarea
+                                id="notify-message"
+                                value={broadcastMessage}
+                                onChange={(e) => setBroadcastMessage(e.target.value)}
+                                required
+                                rows={4}
+                                className="adm-form-textarea"
+                                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)' }}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="adm-btn adm-btn--primary"
+                            disabled={broadcastLoading}
+                            style={{ alignSelf: 'flex-start' }}
+                        >
+                            {broadcastLoading ? 'Se trimite...' : '📢 Trimite notificare tuturor utilizatorilor'}
+                        </button>
+                        {broadcastSuccess && <p className="adm-success" style={{ color: '#2e7d32', margin: '8px 0 0' }}>✅ Notificare trimisă cu succes!</p>}
+                        {broadcastError && <p className="adm-error-text" style={{ color: '#c62828', margin: '8px 0 0' }}>{broadcastError}</p>}
+                    </form>
+                </div>
+            )}
         </div>
     );
 }

@@ -308,20 +308,58 @@ export async function checkWishlist(locationId) {
 // ─── NOTIFICATIONS ────────────────────────────────────────────
 
 /**
+ * Get all notifications for the current user (authenticated).
  * GET /api/notifications
- * Returnează notificările userului autentificat.
- * Răspuns: List<NotificationDto> cu câmpuri: id, title, message, read, createdAt
+ * @returns {Promise<Array<{id: string, title: string, message: string, read: boolean, createdAt: string}>>}
  */
 export async function getNotifications() {
-    return request("/notifications");
+    return request('/notifications');
 }
 
 /**
+ * Mark a notification as read.
  * PUT /api/notifications/{id}/read
- * Marchează o notificare ca citită.
+ * Răspuns: 200 OK fără body (conform specificației)
  */
 export async function markNotificationAsRead(id) {
-    return request(`/notifications/${id}/read`, { method: "PUT" });
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/notifications/${id}/read`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+        }
+    );
+
+    if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch { }
+        throw new Error(errorMessage);
+    }
+
+    // 200 fără body SAU 204 — ambele sunt OK, nu parsăm JSON
+    return null;
+}
+
+
+/**
+ * Broadcast a notification to all users (ADMIN only).
+ * POST /api/notifications/broadcast
+ * @param {string} title
+ * @param {string} message
+ * @returns {Promise<{message: string}>}
+ */
+export async function broadcastNotification(title, message) {
+    return request('/notifications/broadcast', {
+        method: 'POST',
+        body: JSON.stringify({ title, message }),
+    });
 }
 
 
