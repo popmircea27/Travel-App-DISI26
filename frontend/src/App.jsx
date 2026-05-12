@@ -18,6 +18,8 @@ import NearbyPage          from "./pages/nearbyPage/NearbyPage.jsx";
 import AdminDashboardPage  from "./pages/adminDashboardPage/AdminDashboardPage.jsx";
 import WishlistPage        from "./pages/wishlistPage/WishlistPage.jsx";
 import NotificationsPage   from "./pages/notificationsPage/NotificationsPage.jsx";
+import ForgotPasswordPage  from "./pages/forgotPasswordPage/ForgotPasswordPage.jsx";
+import ResetPasswordPage   from "./pages/resetPasswordPage/ResetPasswordPage.jsx";
 
 function App() {
     return (
@@ -29,6 +31,9 @@ function App() {
                     <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
                     <Route path="/locations" element={<AppLayout><LocationsPage /></AppLayout>} />
                     <Route path="/locations/:id" element={<AppLayout><LocationDetailsPage /></AppLayout>} />
+                    
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                     {/* ── Private ── */}
                     <Route path="/profile" element={

@@ -226,6 +226,11 @@ export default function LocationDetailsPage() {
                 </div>
 
                 <p>{location.description || "Nu există descriere disponibilă pentru această locație."}</p>
+                
+                <p><strong>Preț de intrare:</strong> {location.price ? location.price + ' RON' : 'Gratuit'}</p>
+                {location.offers && (
+                    <p><strong>Oferte:</strong> {location.offers}</p>
+                )}
                 <div className="ld-coords">
                     <span>Lat: {location.latitude ?? "—"}</span>
                     <span>Lng: {location.longitude ?? "—"}</span>

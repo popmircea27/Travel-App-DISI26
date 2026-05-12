@@ -6,7 +6,7 @@
 // ============================================================
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
-
+const AI_URL = import.meta.env.VITE_AI_URL || "http://localhost:8000/api";
 // ─── Helper intern ────────────────────────────────────────────
 /**
  * Wrapper peste fetch cu:
@@ -29,10 +29,44 @@ async function request(endpoint, options = {}) {
     };
 
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
-
     // Dacă răspunsul nu e OK, aruncăm eroarea cu mesajul de la server
     if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+        } catch {
+            // dacă body-ul nu e JSON, păstrăm mesajul default
+        }
+        throw new Error(errorMessage);
+    }
+
+    // 204 No Content – nu are body
+    if (response.status === 204) return null;
+
+    return response.json();
+}
+
+// ─── Helper pentru AI requests ────────────────────────────────
+/**
+ * Wrapper pentru request-uri către AI endpoint
+ * Similar cu request() dar folosește AI_URL în loc de BASE_URL
+ */
+async function aiRequest(endpoint, options = {}) {
+    const headers = {
+        "Content-Type": "application/json",
+        ...options.headers,
+    };
+
+    const config = {
+        ...options,
+        headers,
+    };
+
+    const response = await fetch(`${AI_URL}/${endpoint}`, config);
+    
+    if (!response.ok) {
+        let errorMessage = `AI request failed! status: ${response.status}`;
         try {
             const errorData = await response.json();
             errorMessage = errorData.message || errorMessage;
@@ -84,6 +118,27 @@ export async function register(email, password, role = "TOURIST") {
 export function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+}
+
+/**
+ * Solicită trimiterea email-ului de resetare parolă
+ * @param {string} email
+ */
+export async function forgotPassword(email) {
+    return request("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+    });
+}
+
+/**
+ * Setează o parolă nouă pe baza token-ului de resetare primit
+ */
+export async function resetPassword(token, newPassword) {
+    return request("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ token, newPassword }),
+    });
 }
 
 // ─── USER / PROFILE ───────────────────────────────────────────
@@ -408,8 +463,72 @@ export async function generateItinerary(data) {
         };
     }
 
-    return request("/ai/itinerary", {
+    return aiRequest(`ai/itinerary`, {
         method: "POST",
         body: JSON.stringify(body),
     });
+}
+
+// ─── VISIT TRACKING ───────────────────────────────────────────
+
+/**
+ * Records a new visit to a location in the analytics_visits table.
+ * Should be called when a user clicks on a location.
+ * 
+ * @param {string|UUID} objectiveId - The location/objective ID
+ * @returns {Promise<object>}
+ */
+export async function recordLocationVisit(objectiveId) {
+    return request("/newVisit", {
+        method: "POST",
+        body: JSON.stringify({ objectiveId }),
+    });
+}
+
+// ─── ANALYTICS ────────────────────────────────────────────────
+
+/**
+ * Get analytics overview with:
+ * - Most visited locations
+ * - Popular categories
+ * - Visit frequency by time
+ * - Total statistics
+ * 
+ * Requires ADMIN role.
+ * GET /api/analytics/overview
+ * 
+ * @returns {Promise<object>}
+ */
+export async function getAnalyticsOverview() {
+    return request("/analytics/overview");
+}
+
+/**
+ * Get visit frequency statistics filtered by time period.
+ * 
+ * Requires ADMIN role.
+ * GET /api/analytics/visit-frequency/{frequency}
+ * 
+ * @param {string} frequency - "hourly", "daily", or "monthly"
+ * @param {object} params - Query parameters:
+ *   - For "hourly": { date: "YYYY-MM-DD" }
+ *   - For "daily": { month: "YYYY-MM" }
+ *   - For "monthly": { year: "YYYY" }
+ * @returns {Promise<Array>}
+ */
+export async function getVisitFrequency(frequency, params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/analytics/visit-frequency/${frequency}${queryString ? '?' + queryString : ''}`;
+    return request(endpoint);
+}
+
+/**
+ * Get analytics for a specific location.
+ * Requires ADMIN role.
+ * 
+ * @param {string|UUID} locationId - The location ID
+ * @returns {Promise<object>}
+ */
+export async function getLocationAnalytics(locationId) {
+    return request(`/analytics/locations/${locationId}`);
 }

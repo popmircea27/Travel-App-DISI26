@@ -95,6 +95,9 @@ function LoginPage() {
                 <p className="auth-switch">
                     Nu ai cont? <Link to="/register">Înregistrează-te</Link>
                 </p>
+                <p className="auth-switch" style={{ marginTop: "0.5rem" }}>
+                    <Link to="/forgot-password">Ai uitat parola?</Link>
+                </p>
             </div>
         </div>
     );

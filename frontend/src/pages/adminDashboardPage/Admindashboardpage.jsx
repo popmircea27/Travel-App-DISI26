@@ -3,6 +3,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { broadcastNotification } from "../../services/api.js";
+import LocationManagement from "../../components/LocationManagement.jsx";
+import Analytics from "../../components/Analytics.jsx";
 import "./AdminDashboardPage.css";
 
 // ─── Constants ───────────────────────────────────────────────────
@@ -355,6 +357,12 @@ export default function AdminDashboardPage() {
                         📍 Locații
                     </button>
                     <button
+                        className={`adm-tab${activeTab === "analytics" ? " adm-tab--active" : ""}`}
+                        onClick={() => setActiveTab("analytics")}
+                    >
+                        📊 Analytics
+                    </button>
+                    <button
                         className={`adm-tab${activeTab === "notifications" ? " adm-tab--active" : ""}`}
                         onClick={() => setActiveTab("notifications")}
                     >
@@ -422,13 +430,12 @@ export default function AdminDashboardPage() {
 
             {/* LOCATIONS TAB */}
             {!error && activeTab === "locations" && (
-                <div className="adm-card adm-card--full">
-                    <div className="adm-card-header">
-                        <h2 className="adm-card-title">Toate locațiile</h2>
-                        <span className="adm-count-badge">{totalLocations}</span>
-                    </div>
-                    {loading ? <><Skeleton h={40} /><br /><Skeleton h={40} /><br /><Skeleton h={40} /></> : <RecentLocations locations={locations} />}
-                </div>
+                <LocationManagement onRefresh={fetchData} />
+            )}
+
+            {/* ANALYTICS TAB */}
+            {!error && activeTab === "analytics" && (
+                <Analytics />
             )}
 
             {/* NOTIFICATIONS TAB - Admin broadcast */}
