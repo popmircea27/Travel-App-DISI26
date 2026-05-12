@@ -25,6 +25,12 @@ public class LocationDetailsResponseDto {
 
     private Double price;
 
+    private String city;
+
+    private String country;
+
+    private String offers;
+
     @JsonProperty("location_name")
     private String locationName;
 
@@ -46,6 +52,9 @@ public class LocationDetailsResponseDto {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
+    @JsonProperty("updated_at")
+    private LocalDateTime updatedAt;
+
     // Constructors
     public LocationDetailsResponseDto() {
     }
@@ -53,8 +62,16 @@ public class LocationDetailsResponseDto {
     public LocationDetailsResponseDto(UUID id, String name, String description, String audioUrl, String category,
                                       Double price, String locationName, Double latitude, Double longitude, 
                                       UUID adminId, Double averageRating,
-                                      Integer totalReviews, List<ReviewResponseDto> reviews,
-                                      LocalDateTime createdAt) {
+                                      Integer totalReviews, List<ReviewResponseDto> reviews, LocalDateTime createdAt) {
+        this(id, name, description, audioUrl, category, price, locationName, latitude, longitude, adminId, 
+             averageRating, totalReviews, reviews, createdAt, null, null, null, null);
+    }
+
+    public LocationDetailsResponseDto(UUID id, String name, String description, String audioUrl, String category,
+                                      Double price, String locationName, Double latitude, Double longitude, 
+                                      UUID adminId, Double averageRating,
+                                      Integer totalReviews, List<ReviewResponseDto> reviews, LocalDateTime createdAt,
+                                      String city, String country, String offers, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -69,6 +86,10 @@ public class LocationDetailsResponseDto {
         this.totalReviews = totalReviews;
         this.reviews = reviews;
         this.createdAt = createdAt;
+        this.city = city;
+        this.country = country;
+        this.offers = offers;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -182,6 +203,38 @@ public class LocationDetailsResponseDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getOffers() {
+        return offers;
+    }
+
+    public void setOffers(String offers) {
+        this.offers = offers;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override

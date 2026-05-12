@@ -20,24 +20,34 @@ public class LocationRequestDto {
     private Double price;
 
     @NotBlank(message = "Location Name is required")
-    @JsonProperty("location_name")
     private String locationName;
 
     private Double latitude;
 
     private Double longitude;
 
+    @NotBlank(message = "City is required")
+    private String city;
+
+    private String country;
+
+    private String offers;
+
     // Constructors
     public LocationRequestDto() {
     }
 
-    public LocationRequestDto(String name, String category, Double price, String locationName, Double latitude, Double longitude) {
+    public LocationRequestDto(String name, String category, Double price, String locationName, 
+                              Double latitude, Double longitude, String city, String country, String offers) {
         this.name = name;
         this.category = category;
         this.price = price;
         this.locationName = locationName;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.city = city;
+        this.country = country;
+        this.offers = offers;
     }
 
     // Getters and Setters
@@ -103,5 +113,29 @@ public class LocationRequestDto {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getOffers() {
+        return offers;
+    }
+
+    public void setOffers(String offers) {
+        this.offers = offers;
     }
 }

@@ -117,10 +117,11 @@ class LocationControllerIntegrationTest {
                         "description", "Iconic monument",
                         "category", "Monument",
                         "price", 25.5,
-                        "location_name", "New York",
+                        "locationName", "New York",
                         "latitude", 40.6892,
                         "longitude", -74.0445,
-                        "audio_url", "https://example.com/statue.mp3"
+                        "audio_url", "https://example.com/statue.mp3",
+                        "city", "New York"
                 )
         );
 
@@ -142,9 +143,10 @@ class LocationControllerIntegrationTest {
                         "description", "Iconic monument",
                         "category", "Monument",
                         "price", 25.5,
-                        "location_name", "New York",
+                        "locationName", "New York",
                         "latitude", 40.6892,
-                        "longitude", -74.0445
+                        "longitude", -74.0445,
+                        "city", "New York"
                 )
         );
 
@@ -169,9 +171,10 @@ class LocationControllerIntegrationTest {
                         "name", "Central Park Updated",
                         "category", "Park",
                         "price", 0.0,
-                        "location_name", "New York",
+                        "locationName", "New York",
                         "latitude", 40.7851,
-                        "longitude", -73.9683
+                        "longitude", -73.9683,
+                        "city", "New York"
                 )
         );
 
@@ -191,9 +194,10 @@ class LocationControllerIntegrationTest {
                         "name", "Central Park Updated",
                         "category", "Park",
                         "price", 0.0,
-                        "location_name", "New York",
+                        "locationName", "New York",
                         "latitude", 40.7851,
-                        "longitude", -73.9683
+                        "longitude", -73.9683,
+                        "city", "New York"
                 )
         );
 
