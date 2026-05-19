@@ -128,7 +128,10 @@ export default function Analytics() {
 
     // Filter state
     const [frequencyType, setFrequencyType] = useState("monthly");
-    const [frequencyParam, setFrequencyParam] = useState("");
+    const [frequencyParam, setFrequencyParam] = useState(() => {
+        const now = new Date();
+        return now.getFullYear().toString(); // Default to current year (2026)
+    });
 
     const handleLoadAnalytics = async () => {
         setLoading(true);
@@ -161,7 +164,17 @@ export default function Analytics() {
 
     const handleFrequencyChange = (type) => {
         setFrequencyType(type);
-        setFrequencyParam("");
+        // Set appropriate default for each frequency type
+        const now = new Date();
+        let defaultParam = "";
+        if (type === "monthly") {
+            defaultParam = now.getFullYear().toString(); // e.g., "2026"
+        } else if (type === "daily") {
+            defaultParam = now.toISOString().substring(0, 7); // e.g., "2026-05"
+        } else if (type === "hourly") {
+            defaultParam = now.toISOString().substring(0, 10); // e.g., "2026-05-19"
+        }
+        setFrequencyParam(defaultParam);
     };
 
     useEffect(() => {
