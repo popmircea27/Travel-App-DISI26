@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { addReview, getLocationById, getReviews, addToWishlist, removeFromWishlist, checkWishlist } from "../../services/api.js";
+import { addReview, getLocationById, getReviews, addToWishlist, removeFromWishlist, checkWishlist, recordLocationVisit } from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "./LocationDetailsPage.css";
 
@@ -145,6 +145,14 @@ export default function LocationDetailsPage() {
     };
 
     useEffect(() => { fetchLocationDetails(); }, [id]);
+
+    // ─── Record visit to location ──────────────────────────────────
+    useEffect(() => {
+        if (id) {
+            recordLocationVisit(id)
+                .catch((err) => console.error("Failed to record visit:", err));
+        }
+    }, [id]);
 
     const validateReview = () => {
         const numericRating = Number(rating);
